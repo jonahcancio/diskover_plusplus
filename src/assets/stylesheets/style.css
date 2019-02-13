@@ -1,0 +1,36 @@
+.primary-bg {
+	background-color: var(--v-primary-base) !important;
+}
+
+.secondary-bg {
+	background-color: var(--v-secondary-base) !important;
+}
+
+.accent-bg {
+	background-color: var(--v-accent-base) !important;
+}
+
+.error-bg {
+	background-color: var(--v-error-base) !important;
+}
+
+.info-bg {
+	background-color: var(--v-info-base) !important;
+}
+
+.success-bg {
+	background-color: var(--v-info-base) !important;
+}
+
+.warning-bg {
+	background-color: var(--v-info-base) !important;
+}
+
+
+.v-overlay--active {
+	z-index: 1003 !important;
+}
+
+.v-dialog__content--active {
+	z-index: 1004 !important;
+}

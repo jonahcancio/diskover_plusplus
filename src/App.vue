@@ -1,28 +1,36 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <Background>
+    <NavBar />
+    <v-content>      
+      <router-view></router-view>     
+    </v-content>
+    </Background>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
 
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
+  name: 'App',
+  data () {
+    return {
+      //
+    }
+  },
+  created() {
+    this.$http.get(`${this.$backendApiPath}categories`)
+      .then(response => {
+        this.$store.commit('setCategories', response.data)
+        console.log("categories successfully retrieved from API")
+      })
+      .catch(error => {
+        console.log("error retrieving categories to API: ")
+      })
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style scoped>
 </style>
