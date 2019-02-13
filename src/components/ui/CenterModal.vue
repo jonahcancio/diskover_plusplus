@@ -1,6 +1,6 @@
 <template>
   <div class="text-xs-center">
-    <v-dialog :max-width="maxWidth" v-model="myVisible">
+    <v-dialog :width="width" :max-width="maxWidth" v-model="myVisible">
       <slot></slot>
     </v-dialog>
   </div>
@@ -12,6 +12,10 @@ export default {
     isVisible: {
       type: Boolean,
       default: true
+    },
+    width: {
+      type: [String, Number],
+      default: "auto"
     }
   },
   computed: {

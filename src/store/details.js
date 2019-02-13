@@ -1,10 +1,11 @@
+import Vue from "@/vuePrototypes"
+
 export default {
 	namespaced: true,
 	state: {
 		routeCoordinates: [],
 		instructions: [],
 		description: "The Black Panther has been the protector of Wakanda for many generations",
-    startCoords: [],
 		endCoords: [],
 		imageUrls: [],
 	},
@@ -14,9 +15,6 @@ export default {
 		},
 		setInstructions(state, newInstructions) {
 			state.instructions = newInstructions
-		},
-		setStartCoords(state, newStartCoords) {
-			state.startCoords = newStartCoords
 		},
 		setEndCoords(state, newEndCoords) {
 			state.endCoords = newEndCoords
@@ -28,4 +26,11 @@ export default {
 			state.imageUrls = newImageUrls
 		}
 	},
+	getters: {
+		fullImageUrls(state) {
+			return state.imageUrls.map(
+				url => `${Vue.prototype.$backendStaticPath}images/locations/${url}`
+			);
+		},
+	}
 }

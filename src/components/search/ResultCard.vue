@@ -9,7 +9,6 @@
       <v-layout wrap>
         <v-flex xs3>
           <v-img contain height="70px" :src="thumbnailUrl"/>
-           <!-- <v-img contain height="60px" :src="thumbnailUrl" :srcset="`${defaultThumbnail}`"/> -->
         </v-flex>
         <v-flex xs9>
           <v-card-title class="title">{{ result.name }}</v-card-title>

@@ -1,15 +1,6 @@
 <template>
   <div>
     <p class="headline">{{headlineText}}</p>
-    <!-- <h4>Category Filters</h4>
-    <v-layout wrap>
-      <CategoryChip
-        v-for="(category, i) in categories"
-        :key="i"
-        :category="category"
-        @change="applyRouteQueries"
-      />
-    </v-layout>-->
     <CategorySelect @change="applyRouteQueries"/>
     <v-layout justify-end>
       <v-flex xs6>

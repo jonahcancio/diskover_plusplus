@@ -47,6 +47,7 @@ Vue.component("GpsMapHidden", GpsMapHidden)
 import DirectionsTabItem from "@/components/details/DirectionsTabItem"
 import DescriptionTabItem from "@/components/details/DescriptionTabItem"
 import ImagesTabItem from "@/components/details/ImagesTabItem"
+
 Vue.component("DirectionsTabItem", DirectionsTabItem)
 Vue.component("ImagesTabItem", ImagesTabItem)
 Vue.component("DescriptionTabItem", DescriptionTabItem)
