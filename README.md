@@ -20,8 +20,8 @@ Run the following command to startup an auto-reload development server for front
 ```
 npm run serve
 ```
-You may also want to startup the backend server just to test api functionality.
-Run the following command in another terminal to give the frontend access to backend api
+You may also want to startup the backend server to test api functionality.
+Run the following command in another terminal to startup backend-api server in http://localhost:8000/api
 ```
 python manage.py runserver
 ```
@@ -35,7 +35,8 @@ npm run build
 ```
 Also make sure to place your copy of the "static" folder holding all the important Diskover image files into the "api" directory.
 The "api/static" directory was placed in the .gitignore so you have to manually update it everytime.
-After building, the frontend production files should all be located in the "dist" directory. You can now run the whole webapp with:
+After building, The "dist" directory should now hold the index.html and other frontend production files. 
+You can now run the whole webapp with:
 ```
 python manage.py runserver
 ```
