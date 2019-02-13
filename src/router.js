@@ -28,7 +28,6 @@ const router = new VueRouter({
       ]
     },
     {
-      // path: "/form/:edit(edit/\\d+)?",
       path: "/form/:mode/:id?",
       name: "form",
       component: FormPage

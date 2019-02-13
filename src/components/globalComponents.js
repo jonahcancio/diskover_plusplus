@@ -35,11 +35,13 @@ Vue.component("SearchBar", SearchBar)
 Vue.component("CategorySelect", CategorySelect)
 Vue.component("ResultPaginator", ResultPaginator)
 
-//MapView Components
+//Map Components
 import FormMapView from "@/components/map/FormMapView"
 import BigMapView from "@/components/map/BigMapView"
+import GpsMapHidden from "@/components/map/GpsMapHidden"
 Vue.component("FormMapView", FormMapView)
 Vue.component("BigMapView", BigMapView)
+Vue.component("GpsMapHidden", GpsMapHidden)
 
 //Details Components
 import DirectionsTabItem from "@/components/details/DirectionsTabItem"

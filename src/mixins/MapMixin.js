@@ -6,6 +6,10 @@ export default {
     height: {
       type: String,
       default: "60vh"
+    },
+    mapId: {
+      type: String,
+      default: "map"
     }
   },
   data() {
@@ -33,7 +37,7 @@ export default {
   },
   methods: {
     initMap() {
-      this.map = L.map('map', {
+      this.map = L.map(this.mapId, {
         zoomControl: false,
       }).setView(this.defaultCoords, 15)
       L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -61,7 +65,7 @@ export default {
         states: [{
           icon: '<i class="material-icons">refresh</i>',
           onClick: () => {
-            this.currentCoords = [...this.$defaultStartCoords]
+            this.$store.commit("map/setOriginCoords", this.$defaultStartCoords)
             this.map.fitBounds(this.$defaultUpBoundingBox)
           }
         }]

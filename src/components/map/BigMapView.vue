@@ -23,10 +23,6 @@ export default {
   data() {
     return {
       gpsButton: null,
-      currentCoords: this.$defaultStartCoords,
-      pendingCoords: this.$defaultStartCoords,
-      boundingBox: L.latLngBounds(this.$defaultUpBoundingBox),
-      // hasPermissionToMark: false,
       routing: null
     };
   },
@@ -37,31 +33,29 @@ export default {
     routeCoordinates() {
       return this.$store.state.details.routeCoordinates;
     },
-    hasPermissionToMark: {
+    hasPermissionToMark() {      
+      return this.$store.state.map.isGpsPermissionToMark;
+    },
+    originCoords: {
       get() {
-        return this.$store.state.isGpsPermissionToMark;
+        return this.$store.state.map.originCoords;
       },
       set(value) {
-        this.$store.commit("setGpsPermissionToMark", value);
+        this.$store.commit("map/setOriginCoords", value);
       }
     }
   },
   mounted() {
-    this.initGeolocation();
-    console.log("geolocation event callbacks initialized");
     this.initGpsButton();
     console.log("gps button initialized");
-    this.$eventBus.$on("permission-to-mark", this.grantPermissionToMark);
-    console.log("permisson-to-mark callback initialized");
     this.initResetButton();
-    console.log("reset button initialized");
-    this.$eventBus.$on("call-geolocation", this.callGeolocation);
+    console.log("reset button initialized"); 
     if (this.isOnDetailsPage) {
-      this.initRouting(this.currentCoords, this.endCoords);
+      this.initRouting(this.originCoords, this.endCoords);
       console.log("routing initialized");
     } else {
       this.addMarker(
-        this.currentCoords,
+        this.originCoords,
         {
           draggable: true,
           icon: this.originIcon
@@ -75,13 +69,13 @@ export default {
     isOnDetailsPage() {
       this.removeAllMarkers();
       if (this.isOnDetailsPage) {
-        this.initRouting(this.currentCoords, this.endCoords);
+        this.initRouting(this.originCoords, this.endCoords);
         console.log("routing initialized");
       } else {
         this.routing.remove();
         this.removeAllCircles();
         this.addMarker(
-          this.currentCoords,
+          this.originCoords,
           {
             draggable: true,
             icon: this.originIcon
@@ -90,54 +84,37 @@ export default {
         );
       }
     },
-    currentCoords() {
+    originCoords() {
       this.removeAllMarkers();
       if (this.isOnDetailsPage) {
         this.routing.setWaypoints([
-          L.latLng(this.currentCoords),
+          L.latLng(this.originCoords),
           L.latLng(this.endCoords)
         ]);
-        console.log("currentCoords rerouted");
-        this.map.fitBounds([this.currentCoords, this.endCoords]);
+        console.log("originCoords rerouted");
+        this.map.fitBounds([this.originCoords, this.endCoords]);
       } else {
         this.addMarker(
-          this.currentCoords,
+          this.originCoords,
           {
             draggable: true,
             icon: this.originIcon
           },
           "You are here. Drag me all you like."
         );
-        console.log("currentCoords remarkered");
-        this.map.setView(this.currentCoords, 15);
+        console.log("originCoords remarkered");
+        this.map.setView(this.originCoords, 15);
       }
     },
     endCoords() {
       this.routing.setWaypoints([
-        L.latLng(this.currentCoords),
+        L.latLng(this.originCoords),
         L.latLng(this.endCoords)
       ]);
-      this.map.fitBounds([this.currentCoords, this.endCoords]);
+      this.map.fitBounds([this.originCoords, this.endCoords]);
     }
   },
   methods: {
-    initGeolocation() {
-      this.map.on("locationfound", e => {
-        let { lat, lng } = e.latlng;
-        this.pendingCoords = [lat, lng];
-        if (this.hasPermissionToMark) {
-          this.currentCoords = this.pendingCoords;
-        } else if (this.boundingBox.contains(this.pendingCoords)) {
-          this.grantPermissionToMark();
-        } else {
-          this.$eventBus.$emit("open-gps-center-modal");
-        }
-        console.log("geolocation pendingCoords found", this.pendingCoords);
-      });
-      this.map.on("locationerror", e => {
-        console.log("geolocation error: ", e.message);
-      });
-    },
     initGpsButton() {
       this.gpsButton = L.easyButton({
         position: "bottomright",
@@ -146,9 +123,7 @@ export default {
             icon: '<i class="material-icons">gps_fixed</i>',
             onClick: () => {
               if (this.hasPermissionToMark) {
-                this.map.locate({
-                  enableHighAccuracy: true
-                });
+                this.$eventBus.$emit("call-geolocation");
               } else {
                 this.$eventBus.$emit("open-gps-bottom-modal");
               }
@@ -156,17 +131,6 @@ export default {
           }
         ]
       }).addTo(this.map);
-    },
-    callGeolocation() {
-      this.map.locate({
-        enableHighAccuracy: true
-      });
-      console.log("geolocation called");
-    },
-    grantPermissionToMark() {
-      this.hasPermissionToMark = true;
-      this.currentCoords = this.pendingCoords;
-      console.log("permission to mark granted");
     },
     initRouting(start, finish) {
       this.routing = L.Routing.control({

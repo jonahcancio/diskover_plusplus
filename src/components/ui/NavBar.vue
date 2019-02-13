@@ -2,7 +2,8 @@
   <v-toolbar color="primary" app id="nav-bar">
     <v-toolbar-items>
       <v-btn to="/" class="white--text" flat>Diskover++</v-btn>
-      <v-btn to="/form/create" class="white--text" flat>New Location</v-btn>
+      <!-- <v-btn to="/form/create" class="white--text" flat>New Location</v-btn> -->
+      <v-btn class="white--text" flat @click="openGpsModal">GPS</v-btn>
     </v-toolbar-items>
     <v-spacer></v-spacer>
 
@@ -59,6 +60,9 @@ export default {
   methods: {
     showFullMap() {
       this.$store.commit("setSideDrawer", false)
+    },
+    openGpsModal() {
+      this.$eventBus.$emit("open-gps-bottom-modal")
     }
   }
 };

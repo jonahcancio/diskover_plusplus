@@ -18,3 +18,5 @@ Vue.prototype.$defaultUpBoundingBox = [
   [14.646712309301837, 121.07661789894301],
   [14.665232770030423, 121.05537526614295]
 ]
+
+export default Vue;
