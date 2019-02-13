@@ -28,6 +28,7 @@ export default {
       .catch(error => {
         console.log("error retrieving categories to API: ")
       })
+    console.log("PUBLIC PATH:", this.$publicPath)
   }
 }
 </script>

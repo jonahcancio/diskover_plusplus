@@ -6,10 +6,11 @@ Vue.prototype.$qs = qs
 Vue.prototype.$http = Axios
 Vue.prototype.$publicPath = process.env.BASE_URL
 // Vue.prototype.$backendApiPath = "https://fake-api-1.herokuapp.com/"
-// Vue.prototype.$backendApiPath = "http://localhost:3000/"
-Vue.prototype.$backendApiPath = "http://localhost:8000/"
+// Vue.prototype.$backendApiPath = "http://localhost:8000/"
+// Vue.prototype.$backendStaticPath = "http://localhost:8000/static/"
 
-Vue.prototype.$backendStaticPath = "http://localhost:8000/static/"
+Vue.prototype.$backendApiPath = process.env.VUE_APP_API_URL
+Vue.prototype.$backendStaticPath = process.env.VUE_APP_STATIC_URL
 
 Vue.prototype.$eventBus = new Vue()
 Vue.prototype.$defaultStartCoords = [14.655004131234529, 121.06428197779681]

@@ -11,6 +11,7 @@ import FaqPage from "@/pages/FaqPage"
 Vue.use(VueRouter)
 
 const router = new VueRouter({
+  // mode: "history",
   routes: [
 		{
       path: "/",
