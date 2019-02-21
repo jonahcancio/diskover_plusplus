@@ -2,12 +2,20 @@
     <v-container grid-list-lg class="grey lighten-4">
         <v-layout column id="faq">
             <h1 class="my-3 text-xs-center">
-                Frequently Asked Questions
+                Help Page
             </h1>
+            <v-card color="primary">
+                <v-card-title>
+                    <h2 class="white--text">
+                        Frequently Asked Questions
+                    </h2>
+                </v-card-title>
+            </v-card>
             <v-expansion-panel>
                 <v-expansion-panel-content>
                     <div slot="header" class="primary-bg">How do I search for a specific location?</div>
-                    <v-card color = "grey lighten-4">
+                    <v-icon slot="actions" color="white">$vuetify.icons.expand</v-icon>
+                    <v-card color = "accent">
                         <v-card-text>
                             <ol>
                                 <li>Use the search bar in the home page</li>
@@ -21,7 +29,8 @@
             <v-expansion-panel>
                 <v-expansion-panel-content>
                     <div slot="header">How do I search for a location by category?</div>
-                    <v-card color = "grey lighten-4">
+                    <v-icon slot="actions" color="white">$vuetify.icons.expand</v-icon>
+                    <v-card color = "accent">
                         <v-card-text>
                             <ol>
                                 <li>Click on the top left logo to go back to the home page.</li>
@@ -35,7 +44,8 @@
             <v-expansion-panel>
                 <v-expansion-panel-content>
                     <div slot="header">How do I get driving directions from the map?</div>
-                    <v-card color = "grey lighten-4">
+                    <v-icon slot="actions" color="white">$vuetify.icons.expand</v-icon>
+                    <v-card color = "accent">
                         <v-card-text>
                             <ol>
                                 <li>Click on the 'Map' button ont he upper right side of the homepage</li>
