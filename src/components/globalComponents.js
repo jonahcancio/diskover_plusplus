@@ -39,9 +39,11 @@ Vue.component("ResultPaginator", ResultPaginator)
 import FormMapView from "@/components/map/FormMapView"
 import BigMapView from "@/components/map/BigMapView"
 import GpsMapHidden from "@/components/map/GpsMapHidden"
+import Minimap from "@/components/map/Minimap"
 Vue.component("FormMapView", FormMapView)
 Vue.component("BigMapView", BigMapView)
 Vue.component("GpsMapHidden", GpsMapHidden)
+Vue.component("Minimap", Minimap)
 
 //Details Components
 import DirectionsTabItem from "@/components/details/DirectionsTabItem"
