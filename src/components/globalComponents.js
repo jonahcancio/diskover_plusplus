@@ -9,8 +9,6 @@ import SideDrawer from "@/components/ui/SideDrawer"
 import FloatingButton from "@/components/ui/FloatingButton"
 import BottomModal from "@/components/ui/BottomModal"
 import CenterModal from "@/components/ui/CenterModal"
-
-
 Vue.component("NavBar", NavBar)
 Vue.component("Background", Background)
 Vue.component("InfoCard", InfoCard)
@@ -19,6 +17,10 @@ Vue.component("SideDrawer", SideDrawer)
 Vue.component("FloatingButton", FloatingButton)
 Vue.component("BottomModal", BottomModal)
 Vue.component("CenterModal", CenterModal)
+
+//Home Components
+import CategoryCard from "@/components/home/CategoryCard"
+Vue.component("CategoryCard", CategoryCard)
 
 //search Components
 import ResultCard from "@/components/search/ResultCard"
