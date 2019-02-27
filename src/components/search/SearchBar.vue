@@ -1,9 +1,10 @@
 <template>
   <v-text-field
-    class="nav-search pt-2"
+    class="nav-search"
     label="Where to?"
     placeholder="Search away!"
     solo
+    hide-details
     height="1em"
     v-model="searchText"
     @keypress.enter="emitSearch"

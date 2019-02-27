@@ -11,7 +11,7 @@
       :height="height"
       v-model="isVisible"
     >
-      <div class="px-2">
+      <div class="px-2 pt-3">
         <SearchBar/>
         <slot></slot>
       </div>

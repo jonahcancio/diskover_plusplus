@@ -9,8 +9,6 @@ import SideDrawer from "@/components/ui/SideDrawer"
 import FloatingButton from "@/components/ui/FloatingButton"
 import BottomModal from "@/components/ui/BottomModal"
 import CenterModal from "@/components/ui/CenterModal"
-
-
 Vue.component("NavBar", NavBar)
 Vue.component("Background", Background)
 Vue.component("InfoCard", InfoCard)
@@ -19,6 +17,10 @@ Vue.component("SideDrawer", SideDrawer)
 Vue.component("FloatingButton", FloatingButton)
 Vue.component("BottomModal", BottomModal)
 Vue.component("CenterModal", CenterModal)
+
+//Home Components
+import CategoryCard from "@/components/home/CategoryCard"
+Vue.component("CategoryCard", CategoryCard)
 
 //search Components
 import ResultCard from "@/components/search/ResultCard"
@@ -39,9 +41,11 @@ Vue.component("ResultPaginator", ResultPaginator)
 import FormMapView from "@/components/map/FormMapView"
 import BigMapView from "@/components/map/BigMapView"
 import GpsMapHidden from "@/components/map/GpsMapHidden"
+import Minimap from "@/components/map/Minimap"
 Vue.component("FormMapView", FormMapView)
 Vue.component("BigMapView", BigMapView)
 Vue.component("GpsMapHidden", GpsMapHidden)
+Vue.component("Minimap", Minimap)
 
 //Details Components
 import DirectionsTabItem from "@/components/details/DirectionsTabItem"
