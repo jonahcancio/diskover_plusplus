@@ -153,5 +153,7 @@ dmypy.json
 api/static/
 static/
 
+#settings.py
+diskover_plusplus/settings.py
 
 # End of https://www.gitignore.io/api/django
