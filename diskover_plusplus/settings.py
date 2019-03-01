@@ -25,7 +25,9 @@ SECRET_KEY = 'v)9mu!riiqdzaw7_75&6ubq4ijgcc5bnk1jg!22y1@t4x@lz3-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'diskover.up.edu.ph'
+]
 
 
 # Application definition
@@ -59,6 +61,7 @@ CORS_ALLOW_CREDENTIALS = False
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
+    'diskover.up.edu.ph'
 )
 
 ROOT_URLCONF = 'diskover_plusplus.urls'
@@ -94,8 +97,8 @@ DATABASES = {
     'default':{
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'diskoverupd',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'USER': 'cs192-diskover',
+        'PASSWORD': 'DKC\.&LCwR',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -141,6 +144,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'dist'),
     os.path.join(BASE_DIR, 'api/static'),
 )
-STATIC_ROOT = os.path.join(BASE_DIR, 'public')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
