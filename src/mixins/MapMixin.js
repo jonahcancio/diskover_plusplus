@@ -25,7 +25,7 @@ export default {
   },
   mounted() {
     this.initMap()
-    console.log("Mixin: MAP INITIALIZED")
+    // console.log("Mixin: MAP INITIALIZED")
     this.originIcon = L.icon({
       iconUrl: require("@/assets/markers/originIcon.png"),
       shadowUrl: require("@/assets/markers/shadow.png"),
@@ -65,7 +65,7 @@ export default {
         states: [{
           icon: '<i class="material-icons">refresh</i>',
           onClick: () => {
-            this.$store.commit("map/setOriginCoords", this.$defaultStartCoords)
+            this.$store.commit("map/setOriginCoords", [...this.$defaultStartCoords])
             this.map.fitBounds(this.$defaultUpBoundingBox)
           }
         }]
