@@ -134,6 +134,7 @@ export default {
     },
     initRouting(start, finish) {
       this.routing = L.Routing.control({
+        serviceUrl: 'http://diskover.up.edu.ph/osrm/route/v1',
         plan: L.Routing.plan([L.latLng(start), L.latLng(finish)], {
           createMarker: (index, waypoint) => {
             if (index == 0) {
