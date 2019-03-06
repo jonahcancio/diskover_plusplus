@@ -12,7 +12,9 @@
       v-model="isVisible"
     >
       <div class="px-2 pt-3">
-        <SearchBar/>
+        <div class="pb-3">
+          <SearchBar/>
+        </div>
         <slot></slot>
       </div>
     </v-navigation-drawer>

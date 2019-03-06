@@ -7,11 +7,12 @@ import MapPage from "@/pages/MapPage"
 import ResultSide from "@/pages/MapPage/ResultSide"
 import DetailSide from "@/pages/MapPage/DetailSide"
 import FaqPage from "@/pages/FaqPage"
+import Error404Page from "@/pages/Error404Page"
 
 Vue.use(VueRouter)
 
 const router = new VueRouter({
-  // mode: "history",
+  mode: "history",
   routes: [
 		{
       path: "/",
@@ -27,15 +28,20 @@ const router = new VueRouter({
         {path: "details/:locationId?", name: "details", component: DetailSide},
       ]
     },
-    {
-      path: "/form/:mode/:id?",
-      name: "form",
-      component: FormPage
-    },
+    // {
+    //   path: "/form/:mode/:id?",
+    //   name: "form",
+    //   component: FormPage
+    // },
     {
       path:"/faq",
       name: "faq",
       component: FaqPage,
+    },
+    {
+      path:"*",
+      name: "404",
+      component: Error404Page
     }
 	]
 })
