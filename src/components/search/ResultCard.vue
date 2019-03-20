@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     thumbnailUrl() {
-      return `${this.$backendStaticPath}images/locations/${this.result.img_urls[0].img_url}`
+      return `${this.$backendStaticPath}images/locations/${this.result.thumbnail_url}`
     }
   }
 };

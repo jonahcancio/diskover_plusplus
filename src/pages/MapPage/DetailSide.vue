@@ -87,8 +87,7 @@ export default {
             let { lat, lng } = response.data;
             this.$store.commit("details/setDescription", response.data.description);
             this.$store.commit("details/setEndCoords", [lat, lng]);
-            let imageUrls = response.data.img_urls.map(obj => obj.img_url)
-            this.$store.commit("details/setImageUrls", imageUrls)
+            this.$store.commit("details/setImageUrls", response.data.img_urls)
             console.log("endCoords from API have been stored");
           })
           .catch(error => {

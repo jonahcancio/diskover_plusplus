@@ -9,7 +9,7 @@
     </v-layout>
     <p class="subheading">{{resultCount}} results found</p>
     <v-layout column>
-      <ResultCard v-for="(result, i) in results" :key="i" :result="result"/>
+      <ResultCard v-for="result in results" :key="result.id" :result="result"/>
     </v-layout>
     <ResultPaginator @change="applyRouteQueries"/>
   </div>

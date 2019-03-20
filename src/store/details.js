@@ -5,7 +5,7 @@ export default {
 	state: {
 		routeCoordinates: [],
 		instructions: [],
-		description: "The Black Panther has been the protector of Wakanda for many generations",
+		description: "",
 		endCoords: [],
 		imageUrls: [],
 	},

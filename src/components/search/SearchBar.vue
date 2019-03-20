@@ -9,7 +9,7 @@
     v-model="searchText"
     @keypress.enter="emitSearch"
   >
-    <v-btn color="primary" slot="append" icon dark @click="emitSearch">
+    <v-btn color="primary" slot="append" icon dark @click.stop="emitSearch">
       <v-icon>search</v-icon>
     </v-btn>
   </v-text-field>
