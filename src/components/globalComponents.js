@@ -51,7 +51,11 @@ Vue.component("Minimap", Minimap)
 import DirectionsTabItem from "@/components/details/DirectionsTabItem"
 import DescriptionTabItem from "@/components/details/DescriptionTabItem"
 import ImagesTabItem from "@/components/details/ImagesTabItem"
+import RoomBuildingTabItem from "@/components/details/RoomBuildingTabItem"
+import NearbyLocationsTabItem from "@/components/details/NearbyLocationsTabItem"
 
 Vue.component("DirectionsTabItem", DirectionsTabItem)
 Vue.component("ImagesTabItem", ImagesTabItem)
 Vue.component("DescriptionTabItem", DescriptionTabItem)
+Vue.component("RoomBuildingTabItem", RoomBuildingTabItem)
+Vue.component("NearbyLocationsTabItem", NearbyLocationsTabItem)

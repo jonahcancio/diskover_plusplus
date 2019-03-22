@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mb-3">
     <v-card color="secondary">
       <v-container grid-list-lg>
         <v-layout row wrap justify-start align-content-start>

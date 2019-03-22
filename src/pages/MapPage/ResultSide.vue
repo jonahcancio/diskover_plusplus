@@ -20,6 +20,7 @@
 export default {
   created() {
     this.handleRouteChange();
+    this.handleDefaultPagination()
   },
   computed: {
     results() {
@@ -79,9 +80,21 @@ export default {
         query: this.apiQuery
       });
     },
+    //reads route queries and synchs with api queries
     handleRouteChange() {
       this.$store.commit("search/setApiQuery", this.$route.query);
       this.applyApiQueries();
+    },
+
+    //adds a default page=1 if pagination non-existent on route
+    handleDefaultPagination() {
+      if (!("page" in this.$route.query)) {
+        let pagedQuery = {
+          ...this.$route.query,
+          page: 1
+        }
+        this.$router.replace({name: this.$route.name, query: pagedQuery})
+      }
     }
   },
   destroyed() {

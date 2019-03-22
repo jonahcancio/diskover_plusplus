@@ -11,9 +11,15 @@
         </v-layout>
       </v-card>
     </v-flex>
+    <v-flex class="mt-2 title text-xs-center">
+      Category:
+      <router-link
+        :to="{path:'/map/search', query:{category:locationObj.category}}"
+      >{{ locationObj.category }}</router-link>
+    </v-flex>
     <v-flex class="mt-3">
       <v-tabs
-        v-model="currentTab"
+        v-model="currentTab1"
         color="primary"
         slider-color="secondary"
         dark
@@ -21,27 +27,52 @@
         grow
         max="400px"
       >
-        <v-tab v-for="(tab, i) in tabList" :key="i">
+        <v-tab v-for="(tab, i) in tabList1" :key="i">
           <v-layout column>
             <v-icon>{{ tab.icon }}</v-icon>
             <div>{{tab.label}}</div>
           </v-layout>
         </v-tab>
         <v-tab-item>
-          <DirectionsTabItem />
+          <DirectionsTabItem/>
         </v-tab-item>
         <v-tab-item>
-          <ImagesTabItem />
+          <ImagesTabItem/>
         </v-tab-item>
         <v-tab-item>
-          <DescriptionTabItem />
+          <DescriptionTabItem/>
         </v-tab-item>
+      </v-tabs>
+    </v-flex>
+    <v-flex class="mt-3">
+      <v-tabs
+        v-model="currentTab2"
+        color="primary"
+        slider-color="secondary"
+        dark
+        centered
+        grow
+        max="400px"
+      >
+        <v-tab v-for="(tab, i) in tabList2" :key="i">
+          <v-layout column>
+            <v-icon>{{ tab.icon }}</v-icon>
+            <div>{{tab.label}}</div>
+          </v-layout>
+        </v-tab>
+        <v-tab-item>
+          <NearbyLocationsTabItem/>
+        </v-tab-item>
+        <v-tab-item v-if="showRoomBuilding">
+          <RoomBuildingTabItem/>
+        </v-tab-item>
+
       </v-tabs>
     </v-flex>
     <!-- <v-layout justify-space-around class="mt-4">
       <v-btn dark color="blue" :to="`/form/update/${locationId}`">Update</v-btn>
       <v-btn color="error" :to="`/form/delete/${locationId}`">Delete</v-btn>
-    </v-layout> -->
+    </v-layout>-->
   </v-layout>
 </template>
 
@@ -51,20 +82,33 @@ export default {
     return {
       locationObj: {},
       defaultThumbnail: require("@/assets/no-thumbnail.jpg"),
-      currentTab: 0,
-      tabList: [
+      currentTab1: 0,
+      currentTab2: 0,
+      tabList1: [
         { label: "Directions", icon: "directions" },
         { label: "Images", icon: "collections" },
         { label: "Description", icon: "description" }
       ]
-    }
+    };
   },
   computed: {
     locationId() {
       return Number(this.$route.params.locationId);
     },
     thumbnailUrl() {
-      return this.$store.getters["details/fullImageUrls"][0]
+      return this.$store.getters["details/fullImageUrls"][0];
+    },
+    tabList2() {
+      let tabList2 = [{ label: "Nearby Locations", icon: "directions_walk" }];
+      if (this.locationObj.category == "College Buildings") {
+        tabList2.push({ label: "Rooms Inside", icon: "meeting_room" });
+      } else if (this.locationObj.category == "Rooms") {
+        tabList2.push({ label: "Outer Building", icon: "location_city" });
+      }
+      return tabList2;
+    },
+    showRoomBuilding() {
+      return this.locationObj.category == "College Buildings" || this.locationObj.category == "Rooms"
     }
   },
   created() {
@@ -73,6 +117,7 @@ export default {
   watch: {
     $route() {
       this.apiGetLocationData();
+      this.currentTab1 = this.currentTab2 = 0;
     }
   },
   methods: {
@@ -85,9 +130,21 @@ export default {
             console.log(response.data);
             this.locationObj = response.data;
             let { lat, lng } = response.data;
-            this.$store.commit("details/setDescription", response.data.description);
+            this.$store.commit(
+              "details/setDescription",
+              response.data.description
+            );
             this.$store.commit("details/setEndCoords", [lat, lng]);
-            this.$store.commit("details/setImageUrls", response.data.img_urls)
+            this.$store.commit("details/setImageUrls", response.data.img_urls);
+            this.$store.commit(
+              "details/setInsideRooms",
+              response.data.inside_rooms
+            );
+            this.$store.commit(
+              "details/setNearbyLocations",
+              response.data.nearby_locations
+            );
+            this.$store.commit("details/setOuterBuilding", response.data.outer_building)
             console.log("endCoords from API have been stored");
           })
           .catch(error => {

@@ -7,6 +7,9 @@ export default {
 		instructions: [],
 		description: "",
 		endCoords: [],
+		insideRooms: [],
+		nearbyLocations: [],
+		outerBuilding: "",
 		imageUrls: [],
 	},
 	mutations: {
@@ -24,6 +27,15 @@ export default {
 		},
 		setImageUrls(state, newImageUrls) {
 			state.imageUrls = newImageUrls
+		},
+		setInsideRooms(state, newInsideRooms) {
+			state.insideRooms = newInsideRooms
+		},
+		setNearbyLocations(state, newNearbyLocations) {
+			state.nearbyLocations = newNearbyLocations
+		},
+		setOuterBuilding(state, newOuterBuilding) {
+			state.outerBuilding = newOuterBuilding
 		}
 	},
 	getters: {
