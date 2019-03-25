@@ -1,5 +1,7 @@
 <template>
+  <!-- Homepage of diskover shown at default https://diskover.up.edu.ph -->
   <div>
+    <!-- BIG Homepage photo with parallax effects -->
     <v-card>
       <v-parallax :src="require('@/assets/backgrounds/bgimg.jpg')" height="350" dark>
         <v-layout align-center justify-center column>
@@ -13,23 +15,28 @@
         </v-layout>
       </v-parallax>
     </v-card>
+
+    <!-- Quick Home page links and widgets -->
     <v-container fluid>
+      <!-- White semi-transparent overlay -->
       <v-card class="pull-up" color="rgba(255, 230, 230, 0.7)">
         <v-card-title>
           <h1 class="display-1">Where would you like to go?</h1>
         </v-card-title>
         <v-container grid-list-lg fluid>
           <v-layout v-bind="homeLayout" fill-height>
-            <v-flex xs4>
+            <!-- Search widget -->
+            <v-flex xs4>              
               <InfoCard>
                 <h2 slot="title" class="title white--text">Use our search bar</h2>
                 <SearchBar slot="content"/>
               </InfoCard>
             </v-flex>
+            <!-- Map widget -->
             <v-flex xs4>
               <router-link to="/map" class="no-underline">
                 <InfoCard ripple>
-                  <h2 slot="title" class="title white--text">Use our map</h2>
+                  <h2 slot="title" class="title white--text">Use the map</h2>
                   <!-- <Minimap slot="content" height="200px"/> -->
                   <v-img
                     slot="content"
@@ -40,6 +47,7 @@
                 </InfoCard>
               </router-link>
             </v-flex>
+            <!-- Category Cards widget -->
             <v-flex xs4>
               <InfoCard>
                 <h2 slot="title" class="title white--text">Select a category</h2>
@@ -60,9 +68,11 @@
 <script>
 export default {
   computed: {
+    // reference the category names from the Vuex store to render the cat cards
     categories() {
       return this.$store.getters["categoryNames"];
     },
+    // set the layout to be a single row if device width is wide enough, else single column it for mobile
     homeLayout() {
       return {
         column: !this.$vuetify.breakpoint.mdAndUp,

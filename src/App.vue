@@ -1,10 +1,14 @@
 <template>
+  <!-- Vuetify requires everything to be enveloped by v-app -->
   <v-app>
+    <!-- Fix the default Background and Navbar to always appear no matter the page -->
     <Background>
       <NavBar/>
       <v-content>
+        <!-- Vue Router controls the page displayed in router-view based on url route-->
         <router-view></router-view>
       </v-content>
+      <!-- GpsMapHidden is a hidden-map that handles GPS geolocation in the background -->
       <GpsMapHidden mapId="hidden-map"/>
     </Background>
   </v-app>
@@ -13,17 +17,19 @@
 <script>
 export default {
   name: "App",
+
+  // called when App is created
   created() {
-    this.$http
-      .get(`${this.$backendApiPath}categories`)
+    // GET request the categories from the server
+    this.$http.get(`${this.$backendApiPath}categories`)
+      // store categories in the base Vuex store if successful GET
       .then(response => {
         this.$store.commit("setCategories", response.data);
-        console.log("categories successfully retrieved from API");
       })
+      //alert error if unsuccessful GET
       .catch(error => {
-        console.log("error retrieving categories to API: ");
+        alert("error retrieving categories from API");
       });
-    console.log("PUBLIC PATH:", this.$publicPath);
   }
 };
 </script>

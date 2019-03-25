@@ -1,4 +1,5 @@
 <template>
+  <!-- Tab item for displaying the current location description  -->
   <v-card color="secondary">
     <v-container>
       <span class="body-2">{{ description }}</span>

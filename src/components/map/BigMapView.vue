@@ -1,8 +1,10 @@
 <template>
+  <!-- the huge map displayed on the right side on the search and details pages -->
   <div id="map" :style="{height: height}">
     <slot></slot>
     <v-layout justify-center align-center>
       <v-flex align-center>
+        <!-- loading circle in case map doesnt load in time -->
         <v-progress-circular :indeterminate="true"></v-progress-circular>
       </v-flex>
     </v-layout>
@@ -13,8 +15,10 @@
 import MapMixin from "@/mixins/MapMixin";
 
 export default {
-  mixins: [MapMixin],
+  // import the map mixin for automatic map initialization on #map
+  mixins: [MapMixin],  
   props: {
+    // prop to check if page is currently on details or still in results
     isOnDetailsPage: {
       type: Boolean,
       default: false
@@ -22,38 +26,50 @@ export default {
   },
   data() {
     return {
+      // stores  the button control for resetting map zoom to GPS location
       gpsButton: null,
+      // stores object used for controlling the map routings
       routing: null
     };
   },
   computed: {
+    // references the final destination coordinates from Vuex store
     endCoords() {
       return this.$store.state.details.endCoords;
     },
+    // references the important route coordinate points from Vuex store
     routeCoordinates() {
       return this.$store.state.details.routeCoordinates;
     },
+    // references permission for GPS to set marker of map from Vuex store
     hasPermissionToMark() {      
       return this.$store.state.map.isGpsPermissionToMark;
     },
+    // references the origin start coordinates from Vuex store
     originCoords: {
+      // reference Vuex store state
       get() {
         return this.$store.state.map.originCoords;
       },
+      // allow setting of value in Vuex store
       set(value) {
         this.$store.commit("map/setOriginCoords", value);
       }
     }
   },
+  // called after MapMixin's mounted method
   mounted() {
+    // initialize GPS reset button on map
     this.initGpsButton();
-    console.log("gps button initialized");
+    // initialize map reset button on map
     this.initResetButton();
-    console.log("reset button initialized"); 
+    // add routing from origin coordinates to end coordinates if on detail page
     if (this.isOnDetailsPage) {
       this.initRouting(this.originCoords, this.endCoords);
       console.log("routing initialized");
-    } else {
+    }
+    // add a marker corresponding to origin coordinates if on results page
+    else {
       this.addMarker(
         this.originCoords,
         {
@@ -63,14 +79,15 @@ export default {
         "You are here. Drag me all you like."
       );
     }
+    // initialize insturction circle to be triggered when instructions are clicked on the details page
     this.initInstructionCircles();
   },
   watch: {
+    // changes map back from detail mode back to results mode or vice versa page change detected
     isOnDetailsPage() {
       this.removeAllMarkers();
       if (this.isOnDetailsPage) {
         this.initRouting(this.originCoords, this.endCoords);
-        console.log("routing initialized");
       } else {
         this.routing.remove();
         this.removeAllCircles();
@@ -84,16 +101,20 @@ export default {
         );
       }
     },
+    // resets the origin marker whenever originCoords change detected
     originCoords() {
+      // remove all origin markers
       this.removeAllMarkers();
+      // add a routing control if on details page
       if (this.isOnDetailsPage) {
         this.routing.setWaypoints([
           L.latLng(this.originCoords),
           L.latLng(this.endCoords)
         ]);
-        console.log("originCoords rerouted");
         this.map.fitBounds([this.originCoords, this.endCoords]);
-      } else {
+      } 
+      // add an origin marker if on results page
+      else {
         this.addMarker(
           this.originCoords,
           {
@@ -102,11 +123,11 @@ export default {
           },
           "You are here. Drag me all you like."
         );
-        console.log("originCoords remarkered");
         this.map.setView(this.originCoords, 15);
       }
     },
     endCoords() {
+      // reset routing parameters when end coords are changed and fit map zoom to bounding box of markers appropriately
       this.routing.setWaypoints([
         L.latLng(this.originCoords),
         L.latLng(this.endCoords)
@@ -115,6 +136,7 @@ export default {
     }
   },
   methods: {
+    // initialize GPS button at the bottom right to dod different thiings based on permission to mark
     initGpsButton() {
       this.gpsButton = L.easyButton({
         position: "bottomright",
@@ -132,6 +154,7 @@ export default {
         ]
       }).addTo(this.map);
     },
+    // initialize routing using personally Hosted OSRM at serviceUrl and connect start and finish coordinates together
     initRouting(start, finish) {
       this.routing = L.Routing.control({
         serviceUrl: 'https://diskover.up.edu.ph/osrm/route/v1',
@@ -158,6 +181,7 @@ export default {
         fitSelectedRoutes: true,
         collapsible: true
       }).addTo(this.map);
+      // set the intsructions object in the Vuex store when routes haven been found
       this.routing.on("routesfound", e => {
         let insts = e.routes[0].instructions.map(inst => ({
           text: inst.text,
@@ -165,7 +189,8 @@ export default {
           index: inst.index
         }));
         this.setInstructions(insts);
-        let instIndex = 0;
+        // get the important coordinates in the calculated route (turns and corners)
+        let instIndex = 0;        
         let coords = e.routes[0].coordinates.filter((coord, index) => {
           if (insts[instIndex].index == index) {
             instIndex++;
@@ -173,17 +198,22 @@ export default {
           }
           return false;
         });
+        // set Vuex store coordinates to the important coordinates
         this.setRouteCoordinates(coords);
-        console.log("Routing Success!!! Found: ", e.routes[0]);
       });
+      // output a routing error whenever routing has failed
       this.routing.on("routingerror", e => {
-        console.log("Routing Error: ", e.error.message);
+        alert("Routing Error: ");
+        console.log(error.message)
+        // reset instructions in Vuex store
         this.setInstructions([]);
       });
     },
+    // initialize group to store instruction circles on
     initInstructionCircles() {
       this.$eventBus.$on("add-circle", index => {
         let coords = this.routeCoordinates[index];
+        // styling the circle
         this.addCircle(coords, {
           radius: 15,
           color: "#03f",
@@ -193,11 +223,14 @@ export default {
         });
         this.map.setView(coords, 16);
       });
+      // trigger to respond to clear-circles event by removing all the circles
       this.$eventBus.$on("clear-circles", this.removeAllCircles);
     },
+    // set the instructions stored by the Vuex store
     setInstructions(instructions) {
       this.$store.commit("details/setInstructions", instructions);
     },
+    // set the route coordinates stored by the Vuex store
     setRouteCoordinates(coordinates) {
       this.$store.commit("details/setRouteCoordinates", coordinates);
     }

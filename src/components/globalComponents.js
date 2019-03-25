@@ -24,14 +24,12 @@ Vue.component("CategoryCard", CategoryCard)
 
 //search Components
 import ResultCard from "@/components/search/ResultCard"
-import CategoryChip from "@/components/search/CategoryChip"
 import SortSelect from "@/components/search/SortSelect"
 import SearchBar from "@/components/search/SearchBar"
 import CategorySelect from "@/components/search/CategorySelect"
 import ResultPaginator from "@/components/search/ResultPaginator"
 
 Vue.component("ResultCard", ResultCard)
-Vue.component("CategoryChip", CategoryChip)
 Vue.component("SortSelect", SortSelect)
 Vue.component("SearchBar", SearchBar)
 Vue.component("CategorySelect", CategorySelect)

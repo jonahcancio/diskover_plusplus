@@ -1,4 +1,5 @@
 <template>
+  <!-- Used to handle Web page requests that do not exist -->
   <v-container>
     <v-layout class="display-1 pt-4" column>
       <v-flex>
@@ -13,9 +14,6 @@
   </v-container>
 </template>
 
-<script>
-export default {};
-</script>
 
 <style>
 </style>

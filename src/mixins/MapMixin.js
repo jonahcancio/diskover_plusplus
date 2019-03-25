@@ -1,12 +1,15 @@
 const L = window.L
 const console = window.console
 
+// map mixin can be used by any component that uses a leaflet map
 export default {
   props: {
+    // allow parent component to specify height of map
     height: {
       type: String,
       default: "60vh"
     },
+    // allow parent component to specify id of DOM element to render map on
     mapId: {
       type: String,
       default: "map"
@@ -14,18 +17,27 @@ export default {
   },
   data() {
     return {
+      // store circles on map
       circleGroup: {},
+      // store the zoom control button on map
       zoomControl: {},
+      // store the map itself
       map: {},
+      // store the markers on map
       markerGroup: {},
+      // store the default UP Oble coordinates
       defaultCoords: this.$defaultStartCoords,
+      // store the reset control button on map
       resetButton: {},
+      // store the icon used to mark the origin "start" location
       originIcon: {},
     }
   },
+  // called when DOM elements are ready for map to be binded upon
   mounted() {
+    // initialize map
     this.initMap()
-    // console.log("Mixin: MAP INITIALIZED")
+    // initilize originIcon
     this.originIcon = L.icon({
       iconUrl: require("@/assets/markers/originIcon.png"),
       shadowUrl: require("@/assets/markers/shadow.png"),
@@ -36,10 +48,15 @@ export default {
     })
   },
   methods: {
+    // initializes map on element with id mapId and configure the parameters (references and tokens) used
+    // places control buttons in default positions and adds a feature where coordinates are logged to console
+    // when clicking anywhere on map
     initMap() {
       this.map = L.map(this.mapId, {
         zoomControl: false,
       }).setView(this.defaultCoords, 15)
+
+      // add tilelayer with valid accessToken that must be acquired from https://account.mapbox.com/access-tokens/
       L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
         '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -48,8 +65,10 @@ export default {
         'Routing source &copy; <a href="http://project-osrm.org/">OSRM</a>',
         zoom: 16,
         id: 'mapbox.streets',
-        accessToken: 'pk.eyJ1Ijoiam9uYWhjYW5jaW8iLCJhIjoiY2pwcDd4d2c3MDRrczQ5cWxxdjdiZmF0ZiJ9.kXkc1Xcm8M1JDvapymztEw'
+        accessToken: 'pk.eyJ1IjoiZGlza292ZXJwbHVzcGx1cyIsImEiOiJjanRucm1kaHQwMGZqNGFtcjNkbWwyODl3In0.AQ4D4e0LYZRUNHj6t4NPhw'
       }).addTo(this.map)
+
+      // log coordinates to console on click
       this.map.on("click", e => {
         console.log("You clicked on ", e.latlng)
       })
@@ -59,6 +78,7 @@ export default {
       this.markerGroup = L.layerGroup().addTo(this.map)
       this.circleGroup = L.layerGroup().addTo(this.map)
     },
+    // initialize reset button to rezoom the map back to UP Oble
     initResetButton() {
       this.resetButton = L.easyButton({
         position: 'bottomright',
@@ -71,6 +91,7 @@ export default {
         }]
       }).addTo(this.map)
     },
+    // add a marker to map at coords, with optional options and popupText parameters
     addMarker(coords, options, popupText) {
       if (this.markerGroup) {
         let m = L.marker(coords, options).addTo(this.markerGroup)
@@ -81,6 +102,7 @@ export default {
         console.log("error: markerGroup not initialized yet")
       }
     },
+    // remove all markers on map
     removeAllMarkers() {
       if (this.markerGroup) {
         this.markerGroup.clearLayers()
@@ -88,6 +110,7 @@ export default {
         console.log("error: markerGroup not initialized yet")
       }
     },
+    // add a marker to map at coords, with optional options
     addCircle(coords, options) {
       if (this.circleGroup) {
         L.circle(coords, options).addTo(this.circleGroup);
@@ -95,6 +118,7 @@ export default {
         console.log("addCircle error: circleGroup not initialized yet");
       }
     },
+    // remove all circles on map
     removeAllCircles() {
       if (this.circleGroup) {
         this.circleGroup.clearLayers();
@@ -102,6 +126,7 @@ export default {
         console.log("removeCircle error: circleGroup not initialized yet");
       }
     },
+    // rezoom map to fit all markers
     fitAllMapView() {
       this.map.fitBounds(this.markerGroup.getBounds());
     }
