@@ -1,10 +1,12 @@
 <template>
-  <div>
+  <!-- Tab Item for displaying the images of the current location -->
+  <div class="mb-3">
     <v-card color="secondary">
       <v-container grid-list-lg>
         <v-layout row wrap justify-start align-content-start>
           <v-flex v-for="(url, i) in imageUrls" :key="url" xs4>
             <v-hover>
+              <!-- toggle image card to openCarouselModal on click -->
               <v-card
                 slot-scope="{ hover }"
                 :class="`elevation-${hover ? 12 : 2}`"
@@ -21,6 +23,7 @@
         <div class="body-2">Click an image for a bigger view</div>
       </v-card-text>
     </v-card>
+    <!-- Carousel Modal for showing a bigger view of the images -->
     <CenterModal width="550px" :isVisible="isCarouselVisible" @close="setCarouselModal(false)">
       <v-card>
         <v-carousel :cycle="false" v-model="carouselIndex">
@@ -37,19 +40,24 @@
 export default {
   data() {
     return {
+      // controls visibility of carousel modal
       isCarouselVisible: false,
+      // controls the index of the currently displayed image on the carousel
       carouselIndex: 0
     };
   },
   computed: {
+    // references the image urls from the Vuex store
     imageUrls() {
       return this.$store.getters["details/fullImageUrls"];
     }
   },
   methods: {
+    // set the carousel modal visibility
     setCarouselModal(value) {
       this.isCarouselVisible = value;
     },
+    // open the carousel modal to picture at index
     openCarouselModalAt(index) {
       this.isCarouselVisible = true;
       this.carouselIndex = index;

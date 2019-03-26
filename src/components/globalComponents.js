@@ -24,14 +24,12 @@ Vue.component("CategoryCard", CategoryCard)
 
 //search Components
 import ResultCard from "@/components/search/ResultCard"
-import CategoryChip from "@/components/search/CategoryChip"
 import SortSelect from "@/components/search/SortSelect"
 import SearchBar from "@/components/search/SearchBar"
 import CategorySelect from "@/components/search/CategorySelect"
 import ResultPaginator from "@/components/search/ResultPaginator"
 
 Vue.component("ResultCard", ResultCard)
-Vue.component("CategoryChip", CategoryChip)
 Vue.component("SortSelect", SortSelect)
 Vue.component("SearchBar", SearchBar)
 Vue.component("CategorySelect", CategorySelect)
@@ -51,7 +49,11 @@ Vue.component("Minimap", Minimap)
 import DirectionsTabItem from "@/components/details/DirectionsTabItem"
 import DescriptionTabItem from "@/components/details/DescriptionTabItem"
 import ImagesTabItem from "@/components/details/ImagesTabItem"
+import RoomBuildingTabItem from "@/components/details/RoomBuildingTabItem"
+import NearbyLocationsTabItem from "@/components/details/NearbyLocationsTabItem"
 
 Vue.component("DirectionsTabItem", DirectionsTabItem)
 Vue.component("ImagesTabItem", ImagesTabItem)
 Vue.component("DescriptionTabItem", DescriptionTabItem)
+Vue.component("RoomBuildingTabItem", RoomBuildingTabItem)
+Vue.component("NearbyLocationsTabItem", NearbyLocationsTabItem)

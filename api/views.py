@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import CategorySerializer, LocationSerializer
+from .serializers import CategorySerializer, LocationListSerializer, LocationRetrieveSerializer
 from .models import Category, Location
 from rest_framework import viewsets, generics
 from rest_framework.pagination import PageNumberPagination
@@ -29,8 +29,14 @@ class LocationPagination(PageNumberPagination):
 # Viewset for Location
 class LocationViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Location.objects.all()
-    serializer_class = LocationSerializer
     pagination_class = LocationPagination
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return LocationListSerializer
+        if self.action == 'retrieve':
+            return LocationRetrieveSerializer
+        return None
 
     def get_queryset(self):
         queryset = Location.objects.all()
