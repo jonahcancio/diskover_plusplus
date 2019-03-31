@@ -11,29 +11,27 @@ class CategorySerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Category
-        fields = ('name', 'image', 'position', 'url', 'marker', 'routeMarker', 'routeColor')
+        fields = ('id', 'name', 'image', 'url', 'marker', 'routeMarker', 'routeColor')
 
 
-
-
-#used to calculate distance in meters given 2 latlngs
-def distance_between(lat1, lng1, lat2, lng2):
-    lat1, lng1, lat2, lng2 = [math.radians(latlng) for latlng in (lat1, lng1, lat2, lng2)] #convert to radians
-    R = 6371; # Radius of the earth in km        
-    dLat = abs(lat2-lat1) #delta lat
-    dLng = abs(lng2-lng1) #delta lng
-    a = math.pow(math.sin(dLat/2), 2) + math.cos(lat1) * math.cos(lat2) * math.pow(math.sin(dLng/2), 2) 
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a)); 
-    d = R * c; # Distance in km
-    return d*1000; #return in meters
-
-
-DISTANCE_THRESHOLD = 150
 class LocationRetrieveSerializer(serializers.ModelSerializer):
     img_urls = serializers.SerializerMethodField()
     inside_rooms = serializers.SerializerMethodField()
     nearby_locations = serializers.SerializerMethodField()
     outer_building = serializers.SerializerMethodField()
+
+    #used to calculate distance in meters given 2 latlngs
+    DISTANCE_THRESHOLD = 150
+    @staticmethod
+    def distance_between(lat1, lng1, lat2, lng2):
+        lat1, lng1, lat2, lng2 = [math.radians(latlng) for latlng in (lat1, lng1, lat2, lng2)] #convert to radians
+        R = 6371; # Radius of the earth in km        
+        dLat = abs(lat2-lat1) #delta lat
+        dLng = abs(lng2-lng1) #delta lng
+        a = math.pow(math.sin(dLat/2), 2) + math.cos(lat1) * math.cos(lat2) * math.pow(math.sin(dLng/2), 2) 
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a)); 
+        d = R * c; # Distance in km
+        return d*1000; #return in meters
 
     def get_img_urls(self, obj):
         queryset = Image.objects.filter(location=obj.name)
@@ -46,12 +44,12 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def get_nearby_locations(self, obj):
-        queryset = Location.objects.filter(~Q(category="Rooms"))
+        queryset = Location.objects.filter(~Q(category__name="Rooms"))
         serializer = LocationNearbySerializer(instance=queryset, many=True)
         nearbyList = []
         for near in serializer.data:
-            distance = distance_between(obj.lat, obj.lng, near['lat'], near['lng'])
-            if obj.name != near['name'] and distance < DISTANCE_THRESHOLD:
+            distance = self.distance_between(obj.lat, obj.lng, near['lat'], near['lng'])
+            if obj.name != near['name'] and distance < self.DISTANCE_THRESHOLD:
                 nearbyList.append({
                     'name': near['name'],
                     'id': near['id']
@@ -68,7 +66,7 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('id', 'name','category','description','moreInfo', 'lat','lng',
+        fields = ('id', 'name','category_id','description','moreInfo', 'lat','lng',
          'inside_rooms', 'nearby_locations', 'outer_building', 'img_urls', )
 
 class LocationListSerializer(serializers.ModelSerializer):

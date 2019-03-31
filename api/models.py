@@ -46,13 +46,12 @@ class Category(models.Model):
 	"""This class and its functions wrap around the 'category' table in the
 	Diskover's underlying database.
 	"""
-	name = models.CharField(max_length=50, primary_key=True, unique=True, blank=False)
-	image = models.CharField(max_length=260, blank=False)
-	position = models.IntegerField(blank=False)
-	url = models.CharField(max_length=50, blank=False)
-	marker = models.CharField(max_length=260, blank=False)
-	routeMarker = models.CharField(max_length=260, blank=False)
-	routeColor = models.CharField(max_length=7, blank=False)
+	name = models.CharField(max_length=50)
+	image = models.CharField(max_length=260, blank=True, null=True)
+	url = models.CharField(max_length=50, blank=True, null=True)
+	marker = models.CharField(max_length=260, blank=True, null=True)
+	routeMarker = models.CharField(max_length=260, blank=True, null=True)
+	routeColor = models.CharField(max_length=7, blank=True, null=True)
 	class Meta:
 		db_table = 'category'
 
@@ -60,14 +59,14 @@ class Location(models.Model):
 	"""This class and its functions wrap around the 'location' table in the
 	Diskover's underlying database.
 	"""
-	id = models.IntegerField(primary_key=True)
-	name = models.CharField(max_length=100, unique=True, blank=False)
-	category = models.CharField(max_length=50, blank=False)
-	description = models.TextField(blank=False)
-	moreInfo = models.TextField(blank=False)
-	lat = models.FloatField(blank=False)
-	lng = models.FloatField(blank=False)
-	url = models.CharField(max_length=100, blank=False)
+	name = models.CharField(max_length=100)
+	description = models.TextField(blank=True, null=True)
+	moreInfo = models.TextField(blank=True, null=True)  # Field name made lowercase.
+	lat = models.FloatField()
+	lng = models.FloatField()
+	url = models.CharField(max_length=100, blank=True, null=True)
+	category = models.ForeignKey(Category, models.DO_NOTHING, blank=True, null=True)
+	
 	class Meta:
 		db_table = 'location'
 

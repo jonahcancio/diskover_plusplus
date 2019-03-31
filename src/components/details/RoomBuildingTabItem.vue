@@ -2,7 +2,7 @@
   <!-- Tab item for displaying the inside rooms or outer building of the current location -->
   <v-card color="secondary">
     <!-- Display rooms if current location has inside rooms -->
-     <v-list v-if="insideRooms && insideRooms.length">
+     <v-list v-if="isBuilding">
       <v-list-tile
         v-for="inside in insideRooms"
         :key="inside.id"
@@ -15,7 +15,7 @@
       </v-list-tile>
     </v-list>
     <!-- else Display outer building if current location has an outer building -->
-    <v-list v-else-if="outerBuilding">
+    <v-list v-else-if="hasBuilding">
       <v-list-tile 
         :to="`/map/details/${outerBuilding.building_id}`"
         @click="{}"
@@ -33,6 +33,14 @@
 <script>
 export default {
   computed: {
+    // references isBuilding getter from Vuex
+    isBuilding() {
+      return this.$store.getters["details/isBuilding"]
+    },
+    // references hasBuilding getter from Vuex
+    hasBuilding() {
+      return this.$store.getters["details/hasBuilding"]
+    },
     // reference inside rooms from Vuex store
     insideRooms() {
       return this.$store.state.details.insideRooms;

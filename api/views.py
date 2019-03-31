@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by('id')
     serializer_class = CategorySerializer
 
 
@@ -57,7 +57,7 @@ class LocationViewSet(viewsets.ReadOnlyModelViewSet):
         if category_filters:
             filtered_queryset = Location.objects.none()
             for category in category_filters:
-                filtered_queryset |= queryset.filter(category__iexact=category)
+                filtered_queryset |= queryset.filter(category__name__iexact=category)
             return filtered_queryset
         else:
             return queryset

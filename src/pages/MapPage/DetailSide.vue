@@ -17,9 +17,9 @@
     <v-flex class="mt-2 title text-xs-center">
       Category:
       <router-link
-        :to="{path:'/map/search', query:{category:locationObj.category}}"
+        :to="{path:'/map/search', query:{category: locationCategory}}"
       >
-        {{ locationObj.category }}
+        {{ locationCategory }}
       </router-link>
     </v-flex>
     <!-- Primary detais tab -->
@@ -114,6 +114,12 @@ export default {
     locationId() {
       return Number(this.$route.params.locationId);
     },
+    // scans locationObj for category id and finds it in Vuex categories
+    locationCategory() {
+      return this.$store.state.categories.find((category) => {
+        return category.id == this.locationObj.category_id
+      }).name
+    },
     // returns the the first img-url in the location as the thumbnail url
     thumbnailUrl() {
       return this.$store.getters["details/fullImageUrls"][0];
@@ -121,16 +127,16 @@ export default {
     // list of tabs used for related details tab navigation
     tabList2() {
       let tabList2 = [{ label: "Nearby Locations", icon: "directions_walk" }];
-      if (this.locationObj.category == "College Buildings") {
+      if (this.$store.getters["details/isBuilding"]) {
         tabList2.push({ label: "Rooms Inside", icon: "meeting_room" });
-      } else if (this.locationObj.category == "Rooms") {
+      } else if (this.$store.getters["details/hasBuilding"]) {
         tabList2.push({ label: "Outer Building", icon: "location_city" });
       }
       return tabList2;
     },
     // returns true if location is a building or room and a separate Building Room tab
     showRoomBuilding() {
-      return this.locationObj.category == "College Buildings" || this.locationObj.category == "Rooms"
+      return this.$store.getters["details/hasBuilding"] || this.$store.getters["details/isBuilding"]
     }
   },
   created() {

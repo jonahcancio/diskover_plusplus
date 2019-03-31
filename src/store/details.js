@@ -62,5 +62,13 @@ export default {
 				url => `${Vue.prototype.$backendStaticPath}images/locations/${url}`
 			);
 		},
+		// returns wheter the current location HAS an outer building
+		hasBuilding(state) {
+			return state.outerBuilding
+		},
+		// returns whehter the current location IS an outer building
+		isBuilding(state) {
+			return state.insideRooms && state.insideRooms.length
+		}
 	}
 }
