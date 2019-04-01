@@ -5,5 +5,5 @@ from .models import *
 admin.site.register(Administrator)
 admin.site.register(Category)
 admin.site.register(Location)
-admin.site.register(Inside)
+admin.site.register(Subarea)
 admin.site.register(Image)

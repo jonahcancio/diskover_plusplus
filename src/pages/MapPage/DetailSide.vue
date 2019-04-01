@@ -17,9 +17,9 @@
     <v-flex class="mt-2 title text-xs-center">
       Category:
       <router-link
-        :to="{path:'/map/search', query:{category: locationCategory}}"
+        :to="{path:'/map/search', query:{category: locationObj.category}}"
       >
-        {{ locationCategory }}
+        {{ locationObj.category }}
       </router-link>
     </v-flex>
     <!-- Primary detais tab -->
@@ -114,12 +114,6 @@ export default {
     locationId() {
       return Number(this.$route.params.locationId);
     },
-    // scans locationObj for category id and finds it in Vuex categories
-    locationCategory() {
-      return this.$store.state.categories.find((category) => {
-        return category.id == this.locationObj.category_id
-      }).name
-    },
     // returns the the first img-url in the location as the thumbnail url
     thumbnailUrl() {
       return this.$store.getters["details/fullImageUrls"][0];
@@ -130,7 +124,7 @@ export default {
       if (this.$store.getters["details/isBuilding"]) {
         tabList2.push({ label: "Rooms Inside", icon: "meeting_room" });
       } else if (this.$store.getters["details/hasBuilding"]) {
-        tabList2.push({ label: "Outer Building", icon: "location_city" });
+        tabList2.push({ label: "Main Building", icon: "location_city" });
       }
       return tabList2;
     },
@@ -161,12 +155,13 @@ export default {
           .then(response => {
             this.locationObj = response.data;
             let { lat, lng } = response.data;
+            this.$store.commit("details/setCategory", response.data.category);
             this.$store.commit("details/setDescription", response.data.description);
             this.$store.commit("details/setEndCoords", [lat, lng]);
             this.$store.commit("details/setImageUrls", response.data.img_urls);
             this.$store.commit("details/setInsideRooms", response.data.inside_rooms);
             this.$store.commit("details/setNearbyLocations", response.data.nearby_locations);
-            this.$store.commit("details/setOuterBuilding", response.data.outer_building);
+            this.$store.commit("details/setMainBuilding", response.data.main_building);
           })
           // alerts error and resets Vuex Store coordinates if GET unsuccessful
           .catch(error => {

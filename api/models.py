@@ -61,7 +61,7 @@ class Location(models.Model):
 	"""
 	name = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
-	moreInfo = models.TextField(blank=True, null=True)  # Field name made lowercase.
+	more_info = models.TextField(blank=True, null=True)
 	lat = models.FloatField()
 	lng = models.FloatField()
 	url = models.CharField(max_length=100, blank=True, null=True)
@@ -70,19 +70,17 @@ class Location(models.Model):
 	class Meta:
 		db_table = 'location'
 
-class Inside(models.Model):
-	"""This class and its functions wrap around the 'inside' table in the
-	Diskover's underlying database. This python class/PostgreSQL table
-	keeps relationships between rooms and their parent buildings.
-	"""
-	room = models.CharField(max_length=100, primary_key=True, unique=True, blank=False)
-	building = models.CharField(max_length=100, blank=False)
-	class Meta:
-		db_table = 'inside'
-
 class Image(models.Model):
 	""""""
 	location = models.CharField(max_length=100, blank=False)
 	img_url = models.CharField(max_length=260, primary_key=True, unique=True, blank=False)
 	class Meta:
 		db_table = 'image'
+
+class Subarea(models.Model):
+    sub = models.OneToOneField(Location, related_name='subareas', on_delete=models.CASCADE, primary_key=True)
+    building = models.ForeignKey(Location, related_name='building', on_delete=models.CASCADE, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'subarea'
