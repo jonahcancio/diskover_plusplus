@@ -57,3 +57,9 @@ Vue.component("ImagesTabItem", ImagesTabItem)
 Vue.component("DescriptionTabItem", DescriptionTabItem)
 Vue.component("RoomBuildingTabItem", RoomBuildingTabItem)
 Vue.component("NearbyLocationsTabItem", NearbyLocationsTabItem)
+
+//Admin Page Components
+import CategoryDropdown from "@/components/admin/CategoryDropdown"
+import CategoryTable from "@/components/admin/CategoryTable"
+Vue.component("CategoryDropdown", CategoryDropdown)
+Vue.component("CategoryTable", CategoryTable)
