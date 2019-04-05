@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import details from '@/store/details'
 import search from '@/store/search'
 import map from '@/store/map'
+import auth from '@/store/auth'
 
 // Initialize Vuex Store
 Vue.use(Vuex)
@@ -13,7 +14,8 @@ const store = new Vuex.Store({
   modules: {
     details: details,
     search: search,
-    map: map
+    map: map,
+    auth: auth,
   },
   // base state variables to be used
   state: {

@@ -4,14 +4,16 @@ from .models import Category, Location
 from rest_framework import viewsets, generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 # Create your views here.
 
 # Viewset for Category
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('id')
     serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class LocationPagination(PageNumberPagination):
@@ -26,17 +28,28 @@ class LocationPagination(PageNumberPagination):
         })
 
 
-# Viewset for Location
-class LocationViewSet(viewsets.ReadOnlyModelViewSet):
+class FullLocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
-    pagination_class = LocationPagination
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            return LocationListSerializer
         if self.action == 'retrieve':
             return LocationRetrieveSerializer
-        return None
+        else:
+            return LocationListSerializer
+
+
+# Viewset for Location
+class LocationViewSet(viewsets.ModelViewSet):
+    queryset = Location.objects.all()
+    pagination_class = LocationPagination
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return LocationRetrieveSerializer
+        else:
+            return LocationListSerializer
 
     def get_queryset(self):
         queryset = Location.objects.all()

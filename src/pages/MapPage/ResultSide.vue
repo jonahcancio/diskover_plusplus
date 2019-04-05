@@ -72,7 +72,7 @@ export default {
     applyApiQueries() {
       // HTTP GET Request with appropriate querystring
       this.$http
-        .get(`${this.$backendApiPath}location`, {
+        .get(`/locations`, {
           params: this.apiQuery,
           paramsSerializer: params => {
             return this.$qs.stringify(params, { indices: false });

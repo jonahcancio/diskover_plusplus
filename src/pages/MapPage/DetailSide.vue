@@ -150,9 +150,10 @@ export default {
     apiGetLocationData() {
       if (this.locationId) {
         this.$http
-          .get(`${this.$backendApiPath}location/${this.locationId}`)
+          .get(`/locations/${this.locationId}`)
           // stores location data to the details module of Vuex Store if GET successful
           .then(response => {
+            console.log(response)
             this.locationObj = response.data;
             let { lat, lng } = response.data;
             this.$store.commit("details/setCategory", response.data.category);

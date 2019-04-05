@@ -103,7 +103,7 @@ export default {
     },
     getUpdateData(id) {
       this.$http
-        .get(`${this.$backendApiPath}location/${id}`)
+        .get(`/locations/${id}`)
         .then(response => {
           console.log(
             "successful retrieved location update/delete data from API: ",
@@ -138,7 +138,7 @@ export default {
     },
     handleDeleteClick() {
       this.$http
-        .delete(`${this.$backendApiPath}location/${this.id}`)
+        .delete(`/locations/${this.id}`)
         .then(response => {
           console.log("successfully deleted location from API", response);
           this.$router.push(`/map/search`);
@@ -149,7 +149,7 @@ export default {
     },
     postSubmittedData() {
       this.$http
-        .post(`${this.$backendApiPath}location`, {
+        .post(`/locations/`, {
           name: this.name,
           category: this.category,
           description: this.description,
@@ -167,7 +167,7 @@ export default {
     },
     patchSubmittedData() {
       this.$http
-        .patch(`${this.$backendApiPath}location/${this.id}`, {
+        .patch(`/locations/${this.id}`, {
           name: this.name,
           category: this.category,
           description: this.description,

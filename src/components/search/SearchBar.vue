@@ -9,7 +9,7 @@
     hide-details
     height="1em"
     v-model="searchText"
-    @keypress.enter="emitSearch"
+    @keyup.enter="emitSearch"
   >
     <!-- Navigate to result page when search button is pressed -->
     <v-btn color="primary" slot="append" icon dark @click.stop="emitSearch">

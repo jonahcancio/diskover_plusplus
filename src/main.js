@@ -4,6 +4,7 @@ import Vue from 'vue'
 import '@/plugins/vuetify'
 import '@/plugins/leaflet'
 import "@/plugins/clamp.min"
+import '@/plugins/axios'
 
 // Vue router
 import Router from '@/router'

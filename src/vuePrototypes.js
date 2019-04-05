@@ -3,14 +3,11 @@
 // e.g. Vue.prototype.$http accessed as this.$http
 
 import Vue from 'vue'
-import Axios from "axios"
 import qs from "qs"
 
 // querystring parser for get requests
 Vue.prototype.$qs = qs
-// Axios used for http requesting to backend api
-// can be accessed via this.$http
-Vue.prototype.$http = Axios
+
 
 // for debugging, find out the base url where css and js files are stored
 Vue.prototype.$publicPath = process.env.BASE_URL
