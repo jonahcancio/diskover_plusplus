@@ -7,9 +7,10 @@ from rest_framework import routers
 Automatic routing from REST framework
 """
 router = routers.DefaultRouter()
+router.register(r'tags', views.TagViewSet)
 router.register(r'categorys', views.CategoryViewSet)
 router.register(r'locations', views.LocationViewSet)
-router.register(r'full_locations', views.FullLocationViewSet, basename='full_locations')
+router.register(r'admin/locations', views.AdminLocationViewSet, basename='admin_locations')
 
 urlpatterns = [
     path('', include(router.urls)),
