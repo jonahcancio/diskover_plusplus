@@ -54,7 +54,6 @@ export default {
         // verifies if token is valid and has not expired yet
         // logs user out if invalid or has expired
         verifyToken({ state, dispatch }) {
-            console.log(state.jwt)
             axios.post('/api-token-verify/', {
                 'token': state.jwt
             }).then((response) => {
@@ -70,7 +69,7 @@ export default {
                 username: username,
                 password: password
             }).then(response => {
-                console.log(response)
+                console.log("successfully authenticated token: You are now logged in", response)
                 commit("setToken", response.data.token)
                 commit("setUser", username)
                 commit("setInvalidLogInAttempt", false)
@@ -81,6 +80,7 @@ export default {
         },
         // performs logout
         logOut({ commit }) {
+            console.log("successfully deleted token: You are now logged out")
             commit("deleteToken");
             commit("deleteUser");
         },

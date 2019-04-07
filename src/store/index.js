@@ -4,6 +4,7 @@ import details from '@/store/details'
 import search from '@/store/search'
 import map from '@/store/map'
 import auth from '@/store/auth'
+import admin from '@/store/admin/index'
 
 // Initialize Vuex Store
 Vue.use(Vuex)
@@ -16,11 +17,13 @@ const store = new Vuex.Store({
     search: search,
     map: map,
     auth: auth,
+    admin: admin
   },
   // base state variables to be used
   state: {
     // stores list of categories GETed by App component
     categories: [],
+    tags: [],
     // controls when ui/SideDrawer component is visible on left or tucked away
     isSideDrawerVisible: true,
   },
@@ -29,6 +32,9 @@ const store = new Vuex.Store({
     // set categories
     setCategories(state, newCategories) {
       state.categories = newCategories
+    },
+    setTags(state, newTags) {
+      state.tags = newTags
     },
     // set isSideDrawerVisible
     setSideDrawer(state, isVisible) {
@@ -40,6 +46,12 @@ const store = new Vuex.Store({
     // get a list of only the name fields of each category object
     categoryNames(state) {
       return state.categories.map(cat => cat.name)
+    },
+    tagNames(state) {
+      return state.tags.map(tag => tag.name)
+    },
+    hasCategoriesLoaded(state) {
+      return state.categories && state.categories.length != 0
     }
   }
 })

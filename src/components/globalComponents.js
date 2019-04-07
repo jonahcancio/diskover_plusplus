@@ -63,3 +63,15 @@ import CategoryDropdown from "@/components/admin/CategoryDropdown"
 import CategoryTable from "@/components/admin/CategoryTable"
 Vue.component("CategoryDropdown", CategoryDropdown)
 Vue.component("CategoryTable", CategoryTable)
+
+import AdminResultCard from "@/components/admin/AdminResultCard"
+import AdminSortSelect from "@/components/admin/AdminSortSelect"
+import AdminSearchBar from "@/components/admin/AdminSearchBar"
+import AdminCategorySelect from "@/components/admin/AdminCategorySelect"
+import AdminTagsSelect from "@/components/admin/AdminTagsSelect"
+
+Vue.component("AdminResultCard", AdminResultCard)
+Vue.component("AdminSortSelect", AdminSortSelect)
+Vue.component("AdminSearchBar", AdminSearchBar)
+Vue.component("AdminCategorySelect", AdminCategorySelect)
+Vue.component("AdminTagsSelect", AdminTagsSelect)

@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       // true if Bottom Modal should be visible
-      isBottomModalVisible: !this.$store.state.isGpsPermissionToMark,
+      isBottomModalVisible: false, //!this.$store.state.map.isGpsPermissionToMark,
       // true if Center Modal should be visible
       isCenterModalVisible: false,
       // pendingCoordinates to mark map with if geolocation permissions were to be granted

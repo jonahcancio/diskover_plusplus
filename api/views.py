@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import CategorySerializer, LocationListSerializer, LocationRetrieveSerializer, LocationCrudSerializer, TagSerializer
+from .serializers import *
 from .models import Category, Location, Tag, Subarea
 from rest_framework import viewsets, generics
 from rest_framework.pagination import PageNumberPagination
@@ -9,18 +9,99 @@ from rest_framework.serializers import ValidationError
 # Create your views here.
 
 # Viewset for Category
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all().order_by('id')
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
+
+class LocationPagination(PageNumberPagination):
+    page_size = 10
+
+    def get_paginated_response(self, data):
+        return Response({
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data
+        })
 
 
-class AdminLocationViewSet(viewsets.ModelViewSet):
+# Viewset for Location
+class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
-    permission_classes = [AllowAny]
-    serializer_class = LocationCrudSerializer
+    pagination_class = LocationPagination
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return LocationRetrieveSerializer
+        else:
+            return LocationListSerializer
+
+    def filter_queryset(self, queryset):
+        search_query = self.request.query_params.get("q")
+        queryset = self.filter_search(queryset, search_query)
+
+        category_filters = self.request.query_params.getlist("category")
+        queryset = self.filter_categories(queryset, category_filters)
+
+        sort = self.request.query_params.get("_sort")
+        order = self.request.query_params.get("_order")
+        queryset = self.filter_sort(queryset, sort, order)
+
+        return queryset
+
+    def filter_categories(self, queryset, category_filters):
+        if category_filters:
+            filtered_queryset = Location.objects.none()
+            for category in category_filters:
+                filtered_queryset |= queryset.filter(
+                    category__name__iexact=category)
+            return filtered_queryset
+        else:
+            return queryset
+
+    def filter_search(self, queryset, search_query):
+        if search_query:
+            filtered_queryset = queryset.filter(name__icontains=search_query)
+            return filtered_queryset
+        else:
+            return queryset
+
+    def filter_sort(self, queryset, sort, order):
+        if sort:
+            if order == "asc":
+                sorted_queryset = queryset.order_by(sort)
+            else:
+                sorted_queryset = queryset.order_by("-" + sort)
+            return sorted_queryset
+        else:
+            return queryset
+
+
+
+
+class AdminLocationViewSet(LocationViewSet):   
+    queryset = Location.objects.all() 
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return LocationAdminRetrieveSerializer
+        elif self.action == 'list':
+            return LocationAdminListSerializer
+        else:
+            return LocationAdminCudSerializer
+            
 
     def validate(self, requestDict):
         # assume it's valid first
@@ -153,85 +234,58 @@ class AdminLocationViewSet(viewsets.ModelViewSet):
             return Response({
                 'info': "cannot find location with id {}".format(pk)
             })
-        deleteData = LocationCrudSerializer(instance=deletedLocation).data
+        deleteData = LocationAdminCudSerializer(instance=deletedLocation).data
         deleteNum, deleteInfo = deletedLocation.delete()
-        
-        print("deleteData => {}".format(deleteData) )
+
+        print("deleteData => {}".format(deleteData))
         return Response({
             'data': deleteData,
             'info': deleteInfo
         })
 
+    def filter_queryset(self, queryset):
+        search = self.request.query_params.get("search")
+        queryset = self.filter_search(queryset, search)
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all().order_by('id')
-    serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+        category = self.request.query_params.get("category")
+        queryset = self.filter_category(queryset, category)
 
+        ordering = self.request.query_params.get("ordering")
+        queryset = self.filter_sort(queryset, ordering)
 
-class LocationPagination(PageNumberPagination):
-    page_size = 10
-
-    def get_paginated_response(self, data):
-        return Response({
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'count': self.page.paginator.count,
-            'total_pages': self.page.paginator.num_pages,
-            'results': data
-        })
-
-
-# Viewset for Location
-class LocationViewSet(viewsets.ModelViewSet):
-    queryset = Location.objects.all()
-    pagination_class = LocationPagination
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return LocationRetrieveSerializer
-        else:
-            return LocationListSerializer
-
-    def get_queryset(self):
-        queryset = Location.objects.all()
-
-        search_query = self.request.query_params.get("q")
-        queryset = self.filter_search(queryset, search_query)
-
-        category_filters = self.request.query_params.getlist("category")
-        queryset = self.filter_categories(queryset, category_filters)
-
-        sort = self.request.query_params.get("_sort")
-        order = self.request.query_params.get("_order")
-        queryset = self.filter_sort(queryset, sort, order)
+        tags = self.request.query_params.getlist("tag")
+        queryset = self.filter_tags(queryset, tags)
 
         return queryset
 
-    def filter_categories(self, queryset, category_filters):
-        if category_filters:
-            filtered_queryset = Location.objects.none()
-            for category in category_filters:
-                filtered_queryset |= queryset.filter(
-                    category__name__iexact=category)
+    def filter_category(self, queryset, category):
+        if category:
+            filtered_queryset = queryset.filter(category__name__iexact=category)
             return filtered_queryset
         else:
             return queryset
 
-    def filter_search(self, queryset, search_query):
-        if search_query:
-            filtered_queryset = queryset.filter(name__icontains=search_query)
+    def filter_search(self, queryset, search):
+        if search:
+            filtered_queryset = queryset.filter(name__icontains=search)
             return filtered_queryset
         else:
             return queryset
 
-    def filter_sort(self, queryset, sort, order):
-        if sort:
-            if order == "asc":
-                sorted_queryset = queryset.order_by(sort)
-            else:
-                sorted_queryset = queryset.order_by("-" + sort)
+    def filter_sort(self, queryset, ordering):
+        if ordering:
+            sorted_queryset = queryset.order_by(ordering)
             return sorted_queryset
         else:
             return queryset
+
+    def filter_tags(self, queryset, tags):
+        if tags:
+            filtered_queryset = queryset
+            for tag in tags:
+                filtered_queryset = filtered_queryset.filter(tags__name__iexact=tag)
+            return filtered_queryset
+        else:
+            return queryset
+
+
