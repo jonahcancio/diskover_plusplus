@@ -21,10 +21,10 @@ export default {
   // called when App is created
   created() {
     // if logged in, set the authentication headers of axios to allow authenticated api use
-    if (this.isLoggedIn) {
-      this.$store.commit("auth/initAuthHeader");
-    }
-
+    // if (this.isLoggedIn) {
+    //   this.$store.commit("auth/initAuthHeader");
+    // }
+    this.$store.dispatch("auth/verifyToken")
     // GET request the categories from the server
     this.$http
       .get("/categorys")

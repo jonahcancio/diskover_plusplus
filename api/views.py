@@ -47,51 +47,53 @@ class LocationViewSet(viewsets.ModelViewSet):
             return LocationListSerializer
 
     def filter_queryset(self, queryset):
-        search_query = self.request.query_params.get("q")
-        queryset = self.filter_search(queryset, search_query)
+        search = self.request.query_params.get("search")
+        queryset = self.filter_search(queryset, search)
 
-        category_filters = self.request.query_params.getlist("category")
-        queryset = self.filter_categories(queryset, category_filters)
+        category = self.request.query_params.get("category")
+        queryset = self.filter_category(queryset, category)
 
-        sort = self.request.query_params.get("_sort")
-        order = self.request.query_params.get("_order")
-        queryset = self.filter_sort(queryset, sort, order)
+        ordering = self.request.query_params.get("ordering")
+        queryset = self.filter_sort(queryset, ordering)
+
+        tags = self.request.query_params.getlist("tag")
+        queryset = self.filter_tags(queryset, tags)
 
         return queryset
 
-    def filter_categories(self, queryset, category_filters):
-        if category_filters:
-            filtered_queryset = Location.objects.none()
-            for category in category_filters:
-                filtered_queryset |= queryset.filter(
-                    category__name__iexact=category)
+    def filter_category(self, queryset, category):
+        if category:
+            filtered_queryset = queryset.filter(category__name__iexact=category)
             return filtered_queryset
         else:
             return queryset
 
-    def filter_search(self, queryset, search_query):
-        if search_query:
-            filtered_queryset = queryset.filter(name__icontains=search_query)
+    def filter_search(self, queryset, search):
+        if search:
+            filtered_queryset = queryset.filter(name__icontains=search)
             return filtered_queryset
         else:
             return queryset
 
-    def filter_sort(self, queryset, sort, order):
-        if sort:
-            if order == "asc":
-                sorted_queryset = queryset.order_by(sort)
-            else:
-                sorted_queryset = queryset.order_by("-" + sort)
+    def filter_sort(self, queryset, ordering):
+        if ordering:
+            sorted_queryset = queryset.order_by(ordering)
             return sorted_queryset
         else:
             return queryset
 
-
-
+    def filter_tags(self, queryset, tags):
+        if tags:
+            filtered_queryset = queryset
+            for tag in tags:
+                filtered_queryset = filtered_queryset.filter(tags__name__iexact=tag)
+            return filtered_queryset
+        else:
+            return queryset
 
 class AdminLocationViewSet(LocationViewSet):   
     queryset = Location.objects.all() 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = None
 
     def get_serializer_class(self):
@@ -242,50 +244,3 @@ class AdminLocationViewSet(LocationViewSet):
             'data': deleteData,
             'info': deleteInfo
         })
-
-    def filter_queryset(self, queryset):
-        search = self.request.query_params.get("search")
-        queryset = self.filter_search(queryset, search)
-
-        category = self.request.query_params.get("category")
-        queryset = self.filter_category(queryset, category)
-
-        ordering = self.request.query_params.get("ordering")
-        queryset = self.filter_sort(queryset, ordering)
-
-        tags = self.request.query_params.getlist("tag")
-        queryset = self.filter_tags(queryset, tags)
-
-        return queryset
-
-    def filter_category(self, queryset, category):
-        if category:
-            filtered_queryset = queryset.filter(category__name__iexact=category)
-            return filtered_queryset
-        else:
-            return queryset
-
-    def filter_search(self, queryset, search):
-        if search:
-            filtered_queryset = queryset.filter(name__icontains=search)
-            return filtered_queryset
-        else:
-            return queryset
-
-    def filter_sort(self, queryset, ordering):
-        if ordering:
-            sorted_queryset = queryset.order_by(ordering)
-            return sorted_queryset
-        else:
-            return queryset
-
-    def filter_tags(self, queryset, tags):
-        if tags:
-            filtered_queryset = queryset
-            for tag in tags:
-                filtered_queryset = filtered_queryset.filter(tags__name__iexact=tag)
-            return filtered_queryset
-        else:
-            return queryset
-
-

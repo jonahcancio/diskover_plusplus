@@ -53,11 +53,12 @@ export default {
     actions: {
         // verifies if token is valid and has not expired yet
         // logs user out if invalid or has expired
-        verifyToken({ state, dispatch }) {
+        verifyToken({ state, dispatch, commit }) {
             axios.post('/api-token-verify/', {
                 'token': state.jwt
             }).then((response) => {
                 console.log("successfully verified token; you remain logged in", response)
+                commit('initAuthHeader')
             }).catch((error) => {
                 console.log("sorry, token is unverified; logging you out", error)
                 dispatch('logOut')

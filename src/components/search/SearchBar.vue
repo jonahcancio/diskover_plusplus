@@ -35,8 +35,8 @@ export default {
   methods: {
     // used to set search values to the apiQuery in Vuex store and then navigate to the results page
     emitSearch() {
-      this.$store.commit("search/setSearchText", this.searchText);
       this.$store.commit("setSideDrawer", true);
+      this.$store.commit("search/setSearchFilter", this.searchText);      
       this.$router.push({
         path: "/map/search",
         query: this.apiQuery

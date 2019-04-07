@@ -2,13 +2,21 @@
   <!-- renders the location results of a search/filter query on the side drawer -->
   <div>
     <!-- headline for describing results -->
-    <p class="headline">{{headlineText}}</p>
-    <!-- category select for filtering by categories -->
-    <CategorySelect @change="applyRouteQueries"/>    
-    <v-layout justify-end>
-      <!-- sort select for sorting by different attributes -->
+    <p class="title">{{headlineText}}</p>
+    <v-layout justify-space-between>
+      <!-- category select for filtering by categories -->
       <v-flex xs6>
+        <CategorySelect/>
+      </v-flex>
+      <!-- sort select for sorting by different attributes -->
+      <v-flex xs5>
         <SortSelect @change="applyRouteQueries"/>
+      </v-flex>
+    </v-layout>
+    <v-layout>
+      <!-- tags select for filtering by tags -->
+      <v-flex xs12>
+        <TagsSelect/>
       </v-flex>
     </v-layout>
     <p class="subheading">{{resultCount}} results found</p>
@@ -27,9 +35,9 @@ export default {
   // called when page is created
   created() {
     // refresh as if route changed
-    this.handleRouteChange()
+    this.handleRouteChange();
     // set default pagination
-    this.handleDefaultPagination()
+    this.handleDefaultPagination();
   },
   computed: {
     // reference Vuex Store results from the search module
@@ -38,14 +46,14 @@ export default {
     },
     // reference total number of results found from Vuex Store search module
     resultCount() {
-      return this.$store.state.search.totalResultCount
+      return this.$store.state.search.totalResultCount;
     },
     // return headline text based on current search queries
     headlineText() {
       if (this.searchText) {
-        return `You searched for "${this.searchText}"`;
+        return `Showing filtered results for "${this.searchText}"`;
       } else {
-        return "Showing all results";
+        return "Showing all filtered results";
       }
     },
     // reference categories from Vuex Store for category select
@@ -54,9 +62,9 @@ export default {
     },
     // reference searchText (text on search bar) from Vuex Store search module
     searchText() {
-      return this.$store.state.search.searchText;
+      return this.$store.state.search.searchFilter;
     },
-    // reference apiQuery object from Vuex Store search module 
+    // reference apiQuery object from Vuex Store search module
     apiQuery() {
       return this.$store.getters["search/apiQuery"];
     }
@@ -91,12 +99,12 @@ export default {
         // alert an error if unsuccessful GET
         .catch(error => {
           alert("error receiving queried results from API: ");
-          console.log(error)
+          console.log(error);
         });
     },
     // apply apiQuery for Vuex Store towards the url route
     applyRouteQueries() {
-      this.$router.replace({
+      this.$router.push({
         name: "search",
         query: this.apiQuery
       });
@@ -112,8 +120,8 @@ export default {
         let pagedQuery = {
           ...this.$route.query,
           page: 1
-        }
-        this.$router.replace({name: this.$route.name, query: pagedQuery})
+        };
+        this.$router.replace({ name: this.$route.name, query: pagedQuery });
       }
     }
   },
