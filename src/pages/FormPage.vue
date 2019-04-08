@@ -47,6 +47,43 @@
         </v-layout>
         <v-text-field label="Coordinates" readonly :error="isReadOnly" :value="coords"/>
       </v-flex>
+
+      <div id="subarea-select">
+        <v-autocomplete
+          v-model="subareaIds"
+          :items="subareaItems"
+          :search-input.sync="subareaSearch"
+          @input="subareaSearch=null"
+          multiple
+          cache-items
+          hide-selected
+          auto-select-first
+          chips
+          clearable
+          deletable-chips
+          label="Subareas"
+          placeholder="Search a subarea"
+          color="blue"
+          :menu-props="{zIndex:'1001'}"
+        />
+      </div>
+      <div id="subarea-select">
+        <v-autocomplete
+          v-model="mainBuildingId"
+          :items="mainBuildingItems"
+          :search-input.sync="mainBuildingSearch"
+          @input="mainBuildingSearch=null"
+          cache-items
+          hide-selected
+          auto-select-first
+          clearable
+          label="Main Buidling"
+          placeholder="Search a main building"
+          color="blue"
+          :menu-props="{zIndex:'1001'}"
+        />
+      </div>
+
       <v-btn v-if="mode!='delete'" color="success" @click="handleSubmitClick()">Save Location</v-btn>
       <v-btn v-else color="error" @click="handleDeleteClick()">Delete Location</v-btn>
       <v-btn @click="handleCancelClick()">Cancel</v-btn>
@@ -62,7 +99,13 @@ export default {
       category: "",
       description: "",
       coords: [],
-      defaultCoords: this.$defaultStartCoords
+      subareaIds: [],
+      mainBuildingId: -1,
+      defaultCoords: this.$defaultStartCoords,
+      subareaSearch: "",
+      subareaItems: [],
+      mainBuildingSearch: "",
+      mainBuildingItems: []
     };
   },
   computed: {
@@ -82,11 +125,17 @@ export default {
   watch: {
     $route(newRoute, oldRoute) {
       this.handleRouteChange();
+    },
+    subareaSearch(newSearch) {
+      this.apiGetSubareaItems(newSearch);
+    },
+    mainBuildingSearch(newSearch) {
+      this.apiGetMainBuildingItems(newSearch);
     }
   },
   mounted() {
-		this.handleRouteChange();
-		this.coords = this.defaultCoords
+    this.handleRouteChange();
+    this.coords = this.defaultCoords;
   },
   methods: {
     resetMapView() {
@@ -96,6 +145,8 @@ export default {
       this.coords = newCoords;
     },
     handleRouteChange() {
+      this.apiGetSubareaItems("");
+      this.apiGetMainBuildingItems("");
       if (this.mode == "update" || this.mode == "delete") {
         console.log("mode: ", this.mode);
         this.getUpdateData(this.id);
@@ -103,18 +154,29 @@ export default {
     },
     getUpdateData(id) {
       this.$http
-        .get(`/locations/${id}`)
+        .get(`/admin/locations/${id}`)
         .then(response => {
           console.log(
             "successful retrieved location update/delete data from API: ",
             response.data
           );
-          let { name, category, description, lat, lng } = response.data;
+          let {
+            name,
+            category,
+            description,
+            lat,
+            lng,
+            subareas,
+            main_building
+          } = response.data;
           this.name = name;
           this.category = category;
           this.description = description;
           this.defaultCoords = [lat, lng];
           this.coords = [lat, lng];
+          this.subareaIds = subareas;
+          this.mainBuildingId = main_building;
+          console.log(main_building)
         })
         .catch(error => {
           console.log(
@@ -122,6 +184,60 @@ export default {
             error
           );
         });
+    },
+    apiGetSubareaItems(searchValue) {
+      this.$http
+        .get(`/admin/locations`, {
+          params: {
+            search: searchValue,
+            category_ids: [2, 3, 4, 5, 6, 7, 8]
+          },
+          paramsSerializer: params => {
+            return this.$qs.stringify(params, { indices: false });
+          }
+        })
+        .then(response => {
+          console.log("successful got subarea items", response.data);
+          this.subareaItems = response.data.map(sub => {
+            return {
+              text: sub.name,
+              value: sub.id
+            };
+          });
+        })
+        // alert an error if unsuccessful GET
+        .catch(error => {
+          alert("error receiving queried results from API: ");
+          console.log(error);
+        })
+        .finally(() => (this.isLoading = false));
+    },
+    apiGetMainBuildingItems(searchValue) {
+      this.$http
+        .get(`/admin/locations`, {
+          params: {
+            search: searchValue,
+            category_ids: [1]
+          },
+          paramsSerializer: params => {
+            return this.$qs.stringify(params, { indices: false });
+          }
+        })
+        .then(response => {
+          console.log("successfully got mainBuilding items", response.data);
+          this.mainBuildingItems = response.data.map(building => {
+            return {
+              text: building.name,
+              value: building.id
+            };
+          });
+        })
+        // alert an error if unsuccessful GET
+        .catch(error => {
+          alert("error receiving queried results from API: ");
+          console.log(error);
+        })
+        .finally(() => (this.isLoading = false));
     },
 
     handleCancelClick() {
@@ -187,9 +303,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 label {
   font-weight: bold !important;
   font-size: 16px !important;
+}
+
+#subarea-select .v-chip {
+  background-color: var(--v-primary-base) !important;
+  color: white;
 }
 </style>

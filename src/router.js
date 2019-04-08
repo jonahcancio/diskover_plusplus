@@ -12,6 +12,7 @@ import FaqPage from "@/pages/FaqPage"
 import Error404Page from "@/pages/Error404Page"
 
 import LoginPage from "@/pages/LoginPage"
+import DummyPage from "@/pages/DummyPage"
 
 // use vue router
 Vue.use(VueRouter)
@@ -60,6 +61,11 @@ const router = new VueRouter({
       path:"/login",
       name: "login",
       component: LoginPage,
+    },
+    {
+      path: "/dummy",
+      name: "dummy",
+      component: DummyPage
     },
     // Error 404 page catches all pages that don't match above routes
     {

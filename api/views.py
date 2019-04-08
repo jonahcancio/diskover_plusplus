@@ -98,12 +98,23 @@ class AdminLocationViewSet(LocationViewSet):
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
-            return LocationAdminRetrieveSerializer
+            return LocationAdminCudSerializer
         elif self.action == 'list':
-            return LocationAdminListSerializer
+            return LocationSimpleSerializer
         else:
             return LocationAdminCudSerializer
             
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        cat_ids = self.request.query_params.getlist("category_ids")
+        if cat_ids:
+            filtered_queryset = Location.objects.none()
+            for id in cat_ids:
+                filtered_queryset |= queryset.filter(category__id=id)
+            return filtered_queryset
+        else:
+            return queryset
+        
 
     def validate(self, requestDict):
         # assume it's valid first

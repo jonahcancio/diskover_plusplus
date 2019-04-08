@@ -82,10 +82,10 @@
         </v-tab-item>
       </v-tabs>
     </v-flex>
-    <!-- <v-layout justify-space-around class="mt-4">
+    <v-layout justify-space-around class="mt-4">
       <v-btn dark color="blue" :to="`/form/update/${locationId}`">Update</v-btn>
       <v-btn color="error" :to="`/form/delete/${locationId}`">Delete</v-btn>
-    </v-layout>-->
+    </v-layout>
   </v-layout>
 </template>
 

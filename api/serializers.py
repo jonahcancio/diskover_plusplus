@@ -118,7 +118,7 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
 
     def get_inside_rooms(self, obj):
         queryset = Location.objects.filter(
-            subareas__building=obj, category__name="Rooms")
+            building__building=obj, category__name="Rooms")
         serializer = LocationSimpleSerializer(instance=queryset, many=True)
         return serializer.data or None
 
@@ -156,31 +156,31 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
 
     def get_comfort_rooms(self, obj):
         queryset = Location.objects.filter(
-            subareas__building=obj, category__name="Comfort Rooms")
+            building__building=obj, category__name="Comfort Rooms")
         serializer = LocationSimpleSerializer(instance=queryset, many=True)
         return serializer.data or None
 
     def get_offices(self, obj):
         queryset = Location.objects.filter(
-            subareas__building=obj, category__name="Offices")
+            building__building=obj, category__name="Offices")
         serializer = LocationSimpleSerializer(instance=queryset, many=True)
         return serializer.data or None
 
     def get_food_services(self, obj):
         queryset = Location.objects.filter(
-            subareas__building=obj, category__name="Food Services")
+            building__building=obj, category__name="Food Services")
         serializer = LocationSimpleSerializer(instance=queryset, many=True)
         return serializer.data or None
 
     def get_entrances_exits(self, obj):
         queryset = Location.objects.filter(
-            subareas__building=obj, category__name="Entrances/Exits")
+            building__building=obj, category__name="Entrances/Exits")
         serializer = LocationSimpleSerializer(instance=queryset, many=True)
         return serializer.data or None
 
     def get_jeepney_stops(self, obj):
         queryset = Location.objects.filter(
-            subareas__building=obj, category__name="Jeepney Stops")
+            building__building=obj, category__name="Jeepney Stops")
         serializer = LocationSimpleSerializer(instance=queryset, many=True)
         return serializer.data or None
 

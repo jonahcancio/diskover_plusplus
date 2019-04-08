@@ -1,6 +1,6 @@
 <template>
   <!-- selection input with multiple category chips -->
-  <div id="category-select">
+  <div id="tag-select">
     <v-select
       v-model="tagsFilter"
       :items="tags"
@@ -43,7 +43,7 @@ export default {
 </script>
 
 <style>
-#category-select .v-chip {
+#tag-select .v-chip {
   background-color: var(--v-primary-base) !important;
   color: white;
 }
