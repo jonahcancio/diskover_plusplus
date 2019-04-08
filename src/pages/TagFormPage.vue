@@ -101,7 +101,7 @@ export default{
             })
             .then(response => {
                 console.log(response);
-                this.$router.push(`/tagform/update/${response.data.id}`);
+                this.$router.push(`/admin/browse/tags`);
             })
             .else(error => {
                 console.log(error)
