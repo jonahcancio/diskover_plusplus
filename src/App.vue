@@ -20,8 +20,14 @@ export default {
 
   // called when App is created
   created() {
+    // if logged in, set the authentication headers of axios to allow authenticated api use
+    // if (this.isLoggedIn) {
+    //   this.$store.commit("auth/initAuthHeader");
+    // }
+    this.$store.dispatch("auth/verifyToken")
     // GET request the categories from the server
-    this.$http.get(`${this.$backendApiPath}categories`)
+    this.$http
+      .get("/categorys")
       // store categories in the base Vuex store if successful GET
       .then(response => {
         this.$store.commit("setCategories", response.data);
@@ -30,6 +36,29 @@ export default {
       .catch(error => {
         alert("error retrieving categories from API");
       });
+
+    // GET request the tags from the server
+    this.$http
+      .get("/tags")
+      // store categories in the base Vuex store if successful GET
+      .then(response => {
+        this.$store.commit("setTags", response.data);
+      })
+      //alert error if unsuccessful GET
+      .catch(error => {
+        alert("error retrieving categories from API");
+      });
+  },
+  watch: {
+    // verify the auth token everytime the url route changes
+    $route(to, from) {
+      this.$store.dispatch("auth/verifyToken");
+    }
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters["auth/isLoggedIn"];
+    },
   }
 };
 </script>

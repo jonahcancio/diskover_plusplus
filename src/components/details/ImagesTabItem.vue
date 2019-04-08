@@ -20,7 +20,8 @@
         </v-layout>
       </v-container>
       <v-card-text>
-        <div class="body-2">Click an image for a bigger view</div>
+        <div v-if="!imageUrls || !imageUrls.length" class="body-2">No images found for this location</div> 
+        <div v-else class="body-2">Click an image for a bigger view</div>
       </v-card-text>
     </v-card>
     <!-- Carousel Modal for showing a bigger view of the images -->

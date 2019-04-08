@@ -28,12 +28,14 @@ import SortSelect from "@/components/search/SortSelect"
 import SearchBar from "@/components/search/SearchBar"
 import CategorySelect from "@/components/search/CategorySelect"
 import ResultPaginator from "@/components/search/ResultPaginator"
+import TagsSelect from "@/components/search/TagsSelect"
 
 Vue.component("ResultCard", ResultCard)
 Vue.component("SortSelect", SortSelect)
 Vue.component("SearchBar", SearchBar)
 Vue.component("CategorySelect", CategorySelect)
 Vue.component("ResultPaginator", ResultPaginator)
+Vue.component("TagsSelect", TagsSelect)
 
 //Map Components
 import FormMapView from "@/components/map/FormMapView"
@@ -57,3 +59,21 @@ Vue.component("ImagesTabItem", ImagesTabItem)
 Vue.component("DescriptionTabItem", DescriptionTabItem)
 Vue.component("RoomBuildingTabItem", RoomBuildingTabItem)
 Vue.component("NearbyLocationsTabItem", NearbyLocationsTabItem)
+
+//Admin Page Components
+import CategoryDropdown from "@/components/admin/CategoryDropdown"
+import CategoryTable from "@/components/admin/CategoryTable"
+Vue.component("CategoryDropdown", CategoryDropdown)
+Vue.component("CategoryTable", CategoryTable)
+
+import AdminResultCard from "@/components/admin/AdminResultCard"
+import AdminSortSelect from "@/components/admin/AdminSortSelect"
+import AdminSearchBar from "@/components/admin/AdminSearchBar"
+import AdminCategorySelect from "@/components/admin/AdminCategorySelect"
+import AdminTagsSelect from "@/components/admin/AdminTagsSelect"
+
+Vue.component("AdminResultCard", AdminResultCard)
+Vue.component("AdminSortSelect", AdminSortSelect)
+Vue.component("AdminSearchBar", AdminSearchBar)
+Vue.component("AdminCategorySelect", AdminCategorySelect)
+Vue.component("AdminTagsSelect", AdminTagsSelect)

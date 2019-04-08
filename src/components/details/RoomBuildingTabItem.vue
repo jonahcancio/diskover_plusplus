@@ -2,25 +2,25 @@
   <!-- Tab item for displaying the inside rooms or outer building of the current location -->
   <v-card color="secondary">
     <!-- Display rooms if current location has inside rooms -->
-     <v-list v-if="insideRooms && insideRooms.length">
+     <v-list v-if="hasRooms">
       <v-list-tile
         v-for="inside in insideRooms"
         :key="inside.id"
-        :to="`/map/details/${inside.room_id}`"
+        :to="`/map/details/${inside.id}`"
         @click="{}"
       >
         <v-list-tile-content>
-          <v-list-tile-title>{{ inside.room }}</v-list-tile-title>
+          <v-list-tile-title>{{ inside.name }}</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
     </v-list>
     <!-- else Display outer building if current location has an outer building -->
-    <v-list v-else-if="outerBuilding">
+    <v-list v-else-if="hasBuilding">
       <v-list-tile 
-        :to="`/map/details/${outerBuilding.building_id}`"
+        :to="`/map/details/${mainBuilding.id}`"
         @click="{}"
       >
-        <v-list-tile-content>{{ outerBuilding.building }}</v-list-tile-content>
+        <v-list-tile-content>{{ mainBuilding.name }}</v-list-tile-content>
       </v-list-tile>
     </v-list>
     <!-- else display indicator that no rooms/outer building found -->
@@ -33,13 +33,21 @@
 <script>
 export default {
   computed: {
+    // references hasRooms getter from Vuex
+    hasRooms() {
+      return this.$store.getters["details/hasRooms"]
+    },
+    // references hasBuilding getter from Vuex
+    hasBuilding() {
+      return this.$store.getters["details/hasBuilding"]
+    },
     // reference inside rooms from Vuex store
     insideRooms() {
       return this.$store.state.details.insideRooms;
     },
     // reference outer building from Vuex store
-    outerBuilding() {
-      return this.$store.state.details.outerBuilding;
+    mainBuilding() {
+      return this.$store.state.details.mainBuilding;
     }
   }
 };

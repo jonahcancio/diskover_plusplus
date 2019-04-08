@@ -4,6 +4,8 @@ import Vue from "@/vuePrototypes"
 export default {
 	namespaced: true,
 	state: {
+		// specify the location in detail's category
+		category: "",
 		// list of important coordinates used in the route (turns, corners)
 		routeCoordinates: [],
 		// list of routing instructions (directions to location in focus)
@@ -17,11 +19,15 @@ export default {
 		// list of nearby locations to the location in focus
 		nearbyLocations: [],
 		// the outer building of the location in focus if it's a room
-		outerBuilding: "",
+		mainBuilding: "",
 		// the image urls of the location in focus
 		imageUrls: [],
 	},
 	mutations: {
+		// set category
+		setCategory(state, newCategory) {
+			state.category = newCategory
+		},
 		// set important coordinates in route
 		setRouteCoordinates(state, newRouteCoordinates) {
 			state.routeCoordinates = newRouteCoordinates
@@ -50,9 +56,9 @@ export default {
 		setNearbyLocations(state, newNearbyLocations) {
 			state.nearbyLocations = newNearbyLocations
 		},
-		// set outerbuilding of location
-		setOuterBuilding(state, newOuterBuilding) {
-			state.outerBuilding = newOuterBuilding
+		// set mainBuilding of location
+		setMainBuilding(state, newMainBuilding) {
+			state.mainBuilding = newMainBuilding
 		}
 	},
 	getters: {
@@ -62,5 +68,17 @@ export default {
 				url => `${Vue.prototype.$backendStaticPath}images/locations/${url}`
 			);
 		},
+		// returns wheter the current location HAS an main building
+		hasBuilding(state) {
+			return state.mainBuilding != null
+		},
+		// returns whether the current location has inside_rooms
+		hasRooms(state) {
+			return state.insideRooms && state.insideRooms.length
+		},
+		// returns whether the current location IS a building
+		isBuilding(state) {
+			return state.category == "Buildings"
+		}
 	}
 }

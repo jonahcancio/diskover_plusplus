@@ -2,10 +2,12 @@
   <!-- selection input with multiple category chips -->
   <div id="category-select">
     <v-select
-      v-model="categoryFilter"
-      :items="categories"
+      v-model="tagsFilter"
+      :items="tags"
       attach
-      label="Category"
+      small-chips
+      label="Tags"
+      multiple
       clearable
     />
   </div>
@@ -14,21 +16,22 @@
 <script>
 export default {
   computed: {
-    // reference categories from Vuex store
-    categories() {
-      return this.$store.getters["categoryNames"];
+    // reference tags from Vuex store
+    tags() {
+      return this.$store.getters["tagNames"];
     },
     // referencing the apiQuery from the Vuex store
     apiQuery() {
       return this.$store.getters["search/apiQuery"];
     },
     // reference active category filters from Vuex store
-    categoryFilter: {
+    tagsFilter: {
       get() {
-        return this.$store.state.search["categoryFilter"];
+        return this.$store.state.admin.locations.tagsFilter;
       },
+      // set active filters in Vuex store and trigger a change event when chip is selected
       set(value) {
-        this.$store.commit("search/setCategoryFilter", value);
+        this.$store.commit("search/setTagsFilter", value);
         this.$router.push({
           name: "search",
           query: this.apiQuery

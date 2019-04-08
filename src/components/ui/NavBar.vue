@@ -24,6 +24,10 @@
       <v-btn to="/faq" flat class="white--text">
         <span class="white--text">HELP</span>
       </v-btn>
+      <v-btn to="/login" flat class="white--text">
+        <span v-if="$store.getters['auth/isLoggedIn']">Logged in as {{ $store.state.auth.user }}</span>
+        <span v-else>Anonymous User</span>
+      </v-btn>
     </v-toolbar-items>
 
     <!-- Mobile Version -->
@@ -40,7 +44,7 @@
         <v-toolbar-side-icon dark slot="activator" id="nav-dropdown-activator"/>
         <v-list id="nav-dropdown">
           <!-- Map link -->
-          <v-list-tile @click="{}" active-class="primary-text list-active">            
+          <v-list-tile @click="{}" active-class="primary-text list-active">
             <router-link to="/map">
               <v-list-tile-title class="white--text" @click="showFullMap">MAP</v-list-tile-title>
             </router-link>
@@ -49,6 +53,17 @@
           <v-list-tile @click="{}" active-class="primary-text list-active">
             <router-link to="/faq">
               <v-list-tile-title class="white--text">HELP</v-list-tile-title>
+            </router-link>
+          </v-list-tile>
+          <!-- Log in link -->
+          <v-list-tile @click="{}" active-class="primary-text list-active">
+            <router-link to="/login">
+              <v-list-tile-title class="white--text">
+                <span
+                  v-if="$store.getters['auth/isLoggedIn']"
+                >Logged in as {{ $store.state.auth.user }}</span>
+                <span v-else>Anonymous User</span>
+              </v-list-tile-title>
             </router-link>
           </v-list-tile>
         </v-list>
@@ -62,11 +77,11 @@ export default {
   methods: {
     // tuck sideDrawer In to show full map
     showFullMap() {
-      this.$store.commit("setSideDrawer", false)
+      this.$store.commit("setSideDrawer", false);
     },
     // trigger event for gps modals to react to and open
     openGpsModal() {
-      this.$eventBus.$emit("open-gps-bottom-modal")
+      this.$eventBus.$emit("open-gps-bottom-modal");
     }
   }
 };

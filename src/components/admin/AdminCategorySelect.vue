@@ -5,7 +5,8 @@
       v-model="categoryFilter"
       :items="categories"
       attach
-      label="Category"
+      small-chips
+      label="Select Category"
       clearable
     />
   </div>
@@ -18,21 +19,15 @@ export default {
     categories() {
       return this.$store.getters["categoryNames"];
     },
-    // referencing the apiQuery from the Vuex store
-    apiQuery() {
-      return this.$store.getters["search/apiQuery"];
-    },
     // reference active category filters from Vuex store
-    categoryFilter: {
+    categoryFilter: {  
       get() {
-        return this.$store.state.search["categoryFilter"];
+        return this.$store.state.admin.locations.categoryFilter;
       },
+      // set category filter in Vuex and trigger a change event when chip is selected
       set(value) {
-        this.$store.commit("search/setCategoryFilter", value);
-        this.$router.push({
-          name: "search",
-          query: this.apiQuery
-        });
+        this.$store.commit("admin/locations/setCategoryFilter", value);
+        this.$emit("change");
       }
     }
   }

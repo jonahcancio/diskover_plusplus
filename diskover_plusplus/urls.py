@@ -16,12 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),   
+    path('api/', include('api.urls')),
     path('', TemplateView.as_view(template_name='index.html')),
-    re_path(r'^(?P<path>.*)/$', TemplateView.as_view(template_name='index.html')), 
+    re_path(r'^api/api-token-auth/', obtain_jwt_token),
+    re_path(r'^api/api-token-refresh/', refresh_jwt_token),
+    re_path(r'^api/api-token-verify/', verify_jwt_token),
+    re_path(r'^(?P<path>.*)/$', TemplateView.as_view(template_name='index.html')),     
 ]
 
 #uncomment the last urlpattern if running vue-router on history mode instead of hash mode

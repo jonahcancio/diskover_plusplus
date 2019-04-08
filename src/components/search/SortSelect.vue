@@ -1,12 +1,6 @@
 <template>
   <!-- selection field for inputting how results are sorted -->
-  <v-select 
-    :items="sortItems"
-    label="sort by..."
-    clearable
-    attach
-    v-model="sortChoice"  
-  />
+  <v-select :items="sortItems" label="Sort by..." clearable attach v-model="sortFilter"/>
 </template>
 
 <script>
@@ -14,25 +8,34 @@ export default {
   data() {
     return {
       // items whose text will appear as sort choices and the value each one corresponds to
-      sortItems:[ 
-        {text: "alphabetically (a-z)", value: "name asc"},
-        {text: "alphabetically (z-a)", value: "name desc"},
-        {text: "least recently added", value: "id asc"},
-        {text: "most recently added", value: "id desc"}
+      sortItems: [
+        { text: "alphabetically (a-z)", value: "name" },
+        { text: "alphabetically (z-a)", value: "-name" },
+        { text: "least recently added", value: "id" },
+        { text: "most recently added", value: "-id" }
       ],
       // the overall sorting choiced picked by the user
-      sortChoice: `${this.$route.query["_sort"]} ${this.$route.query["_order"]}`
+      sortChoice: this.$route.query["ordering"]
+    };
+  },
+  computed: {
+    // referencing the apiQuery from the Vuex store
+    apiQuery() {
+      return this.$store.getters["search/apiQuery"];
+    },
+     // reference active category filters from Vuex store
+    sortFilter: {
+      get() {
+        return this.$store.state.search["orderingFilter"];
+      },
+      set(value) {
+        this.$store.commit("search/setOrderingFilter", value);
+        this.$router.push({
+          name: "search",
+          query: this.apiQuery
+        });
+      }
     }
   },
-  watch: {
-    // sets the Vuex store sortBy and orderBy values whenever sortChoice is changed by the user
-    // triggers change event as well
-    sortChoice(newChoice) {
-      let [ sortBy, orderBy ] = newChoice? newChoice.split(" ") : [null, null] 
-      this.$store.commit("search/setSortBy", sortBy)
-      this.$store.commit("search/setOrderBy", orderBy)
-      this.$emit("change")
-    }
-  }
-}
+};
 </script>

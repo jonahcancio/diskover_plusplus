@@ -29,16 +29,15 @@ export default {
   computed: {
     // referencing the apiQuery from the Vuex store
     apiQuery() {
-      return this.$store.getters["search/apiQuery"];
+      return this.$store.getters["admin/locations/apiQuery"];
     }
   },
   methods: {
     // used to set search values to the apiQuery in Vuex store and then navigate to the results page
     emitSearch() {
-      this.$store.commit("setSideDrawer", true);
-      this.$store.commit("search/setSearchFilter", this.searchText);      
+      this.$store.commit("admin/locations/setSearchFilter", this.searchText);
       this.$router.push({
-        path: "/map/search",
+        path: "/admin/locations",
         query: this.apiQuery
       });
     }
