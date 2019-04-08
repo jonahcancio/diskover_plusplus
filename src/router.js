@@ -5,6 +5,8 @@ import VueRouter from 'vue-router'
 import HomePage from "@/pages/HomePage"
 import FormPage from "@/pages/FormPage"
 import AdminPage from "@/pages/AdminPages/AdminLocationsPage"
+
+import CategoryFormPage from "@/pages/CategoryFormPage"
 import MapPage from "@/pages/MapPage"
 import ResultSide from "@/pages/MapPage/ResultSide"
 import DetailSide from "@/pages/MapPage/DetailSide"
@@ -66,6 +68,12 @@ const router = new VueRouter({
       path:"*",
       name: "404",
       component: Error404Page
+    },
+    //category form page
+    {
+      path:"/categoryform",
+      name: "categoryform",
+      component: CategoryFormPage,
     }
 	]
 })
