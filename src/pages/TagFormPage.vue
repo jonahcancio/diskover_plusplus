@@ -1,0 +1,119 @@
+<template>
+  <v-container grid-list-lg class="grey lighten-4">
+    <v-card>
+        <v-card-title class="primary">
+            <h1 v-if="mode == 'create'" class="white--text">Add Tag</h1>
+            <h1 v-else class="white--text">Edit Tag</h1>
+        </v-card-title>
+        <v-container>
+            <v-layout column>
+            <v-flex xs12>
+                <label>Name</label>
+                <v-text-field
+                placeholder="Name of the tag"
+                color="black"
+                v-model="name"
+                :readonly="isReadOnly"
+                :error="isReadOnly"
+                />
+            </v-flex>
+        </v-layout>
+        <v-card-actions>
+            <v-btn class="primary white--text" v-on:click="onSubmitClick">Submit</v-btn>
+            <v-btn v-if="mode != 'create'" class="primary white--text" v-on:click="onDeleteClick">Delete</v-btn>
+        </v-card-actions>
+        </v-container>
+    </v-card>
+  </v-container>
+</template>
+
+<script>
+export default{
+    data(){
+        return{
+            name: null,
+        }
+    },
+    computed:{
+        id() {
+            return this.$route.params.id;
+        },
+        mode() {
+            return this.$route.params.mode;
+        }
+    },
+    mounted(){
+        this.handleRouteChange()
+    },
+    methods:{
+        handleRouteChange() {
+            if (this.mode == "update" || this.mode == "delete") {
+                console.log("mode: ", this.mode);
+                this.getUpdateData(this.id);
+            }
+        },
+        getUpdateData(id){
+            this.$http.get(`/tags/${id}`)
+            .then(response => {
+                let {name} = response.data;
+                this.name = name;
+            })
+            .else(error => {
+                console.log(`Failed to get tag ${id}`);
+                console.log(error);
+            })
+        },
+        onSubmitClick(){
+            if(this.mode == 'create'){
+                this.handlePost()
+            }else if(this.mode == "update"){
+                this.handlePush()
+            }
+        },
+        onDeleteClick(){
+            this.$http.delete(`/tags/${this.id}/`)
+            .then(response => {
+                console.log('Successfully deleted tag')
+                console.log(response)
+                this.name = null;
+                this.$router.push(`/tagform/create/`);
+            })
+            .else(error => {
+                console.log("Failed to delete tag")
+                console.log(error)
+            })
+        },
+        handlePush(){
+            console.log(`You are editing tag ${this.id}`)
+            this.$http.patch(`/tags/${this.id}/`,{
+                name: this.name
+            })
+            .then(response => {
+                console.log(response)
+            })
+            .else(error => {
+                console.log(error)
+            })
+        },
+        handlePost(){
+            this.$http.post('/tags/',{
+                name: this.name
+            })
+            .then(response => {
+                console.log(response);
+                this.$router.push(`/tagform/update/${response.data.id}`);
+            })
+            .else(error => {
+                console.log(error)
+            })
+        }
+    }
+}
+</script>
+
+<style scoped>
+    label {
+    font-weight: bold !important;
+    font-size: 16px !important;
+    }
+</style>

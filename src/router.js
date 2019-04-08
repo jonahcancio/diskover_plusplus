@@ -7,6 +7,7 @@ import FormPage from "@/pages/FormPage"
 import AdminPage from "@/pages/AdminPages/AdminLocationsPage"
 
 import CategoryFormPage from "@/pages/CategoryFormPage"
+import TagFormPage from "@/pages/TagFormPage"
 import MapPage from "@/pages/MapPage"
 import ResultSide from "@/pages/MapPage/ResultSide"
 import DetailSide from "@/pages/MapPage/DetailSide"
@@ -74,6 +75,11 @@ const router = new VueRouter({
       path:"/categoryform",
       name: "categoryform",
       component: CategoryFormPage,
+    },
+    {
+      path:"/tagform/:mode/:id?",
+      name: "tagform",
+      component: TagFormPage,
     }
 	]
 })
