@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .serializers import *
 from .models import Category, Location, Tag, Subarea
 from rest_framework import viewsets, generics
@@ -6,7 +5,11 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from rest_framework.serializers import ValidationError
-# Create your views here.
+from django.http.request import QueryDict
+import os
+
+# folder to store the saved images to
+SAVED_IMAGES_LOCATION = "api/static/"
 
 # Viewset for Category
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -19,7 +22,7 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
+
 
 class LocationPagination(PageNumberPagination):
     page_size = 10
@@ -33,8 +36,9 @@ class LocationPagination(PageNumberPagination):
             'results': data
         })
 
-
 # Viewset for Location
+
+
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
     pagination_class = LocationPagination
@@ -63,7 +67,8 @@ class LocationViewSet(viewsets.ModelViewSet):
 
     def filter_category(self, queryset, category):
         if category:
-            filtered_queryset = queryset.filter(category__name__iexact=category)
+            filtered_queryset = queryset.filter(
+                category__name__iexact=category)
             return filtered_queryset
         else:
             return queryset
@@ -86,24 +91,26 @@ class LocationViewSet(viewsets.ModelViewSet):
         if tags:
             filtered_queryset = queryset
             for tag in tags:
-                filtered_queryset = filtered_queryset.filter(tags__name__iexact=tag)
+                filtered_queryset = filtered_queryset.filter(
+                    tags__name__iexact=tag)
             return filtered_queryset
         else:
             return queryset
 
-class AdminLocationViewSet(LocationViewSet):   
-    queryset = Location.objects.all() 
-    permission_classes = [IsAuthenticatedOrReadOnly]
+# Viewset for locations that admin can CRUD
+
+
+class AdminLocationViewSet(LocationViewSet):
+    queryset = Location.objects.all()
+    permission_classes = [AllowAny]
     pagination_class = None
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return LocationAdminCudSerializer
-        elif self.action == 'list':
+        if self.action == 'list':
             return LocationSimpleSerializer
         else:
             return LocationAdminCudSerializer
-            
+
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
         cat_ids = self.request.query_params.getlist("category_ids")
@@ -114,14 +121,12 @@ class AdminLocationViewSet(LocationViewSet):
             return filtered_queryset
         else:
             return queryset
-        
 
     def validate(self, requestDict):
         # assume it's valid first
         isValid = True
         # error dict starts empty because assumed valid
         errorDict = {}
-
         # validate main_building
         main_building = requestDict.get('main_building')
         if main_building and not isinstance(main_building, int):
@@ -138,14 +143,61 @@ class AdminLocationViewSet(LocationViewSet):
         tags = requestDict.get('tags')
         if tags and not(isinstance(tags, list) and all([isinstance(tag, int) for tag in tags])):
             isValid = False
-            errorDict['tab'] = "should be an array of integers"
+            errorDict['tag'] = "should be an array of integers"
 
         if not isValid:
             raise ValidationError(errorDict)
 
+    # returns the dictionary version of input querydict, useful for handling multipart form data
+    def parse_querydict(self, queryDict):
+        parsedDict = dict(queryDict)
+        parsedDict['name'] = parsedDict.get('name') and parsedDict['name'][0]
+        parsedDict['category'] = parsedDict.get(
+            'category') and int(parsedDict['category'][0])
+        parsedDict['description'] = parsedDict.get(
+            'description') and parsedDict['description'][0]
+        parsedDict['more_info'] = parsedDict.get(
+            'more_info') and parsedDict['more_info'][0]
+        parsedDict['lat'] = parsedDict.get('lat') and int(parsedDict['lat'][0])
+        parsedDict['lng'] = parsedDict.get('lng') and int(parsedDict['lng'][0])
+        parsedDict['subareas'] = parsedDict.get(
+            'subareas') and [int(sub) for sub in parsedDict['subareas']]
+        parsedDict['main_building'] = parsedDict.get(
+            'main_building') and int(parsedDict['main_building'][0])
+        parsedDict['tags'] = parsedDict.get(
+            'tags') and [int(tag) for tag in parsedDict['tags']]
+        return parsedDict
+
+    # input imageFiles list and writes them to static/images directory
+    def handle_image_uploads(self, imageFiles):
+        savedFileNames = []        
+        for imageFile in imageFiles:
+            copyCount = 1
+            fileName, fileExt = os.path.splitext(imageFile.name)
+            newFileName = fileName
+            while True:
+                filePath = "{}{}{}".format(SAVED_IMAGES_LOCATION, newFileName, fileExt)
+                if not os.path.exists(filePath):
+                    break
+                newFileName = "{}_{}".format(fileName, copyCount)
+                copyCount += 1
+            os.makedirs(os.path.dirname(filePath), exist_ok=True)
+            with open(filePath, 'wb+') as destination:
+                for chunk in imageFile.chunks():
+                    destination.write(chunk)
+            savedFileNames.append(newFileName)
+        return savedFileNames
+
+
     # OVERRIDE CREATE HOOK FOR HANDLING POST REQUESTS
     def create(self, request):
         requestDict = request.data
+        if isinstance(requestDict, QueryDict):
+            requestDict = self.parse_querydict(requestDict)
+
+        filesDict = dict(request.FILES)
+        if filesDict.get('image'):
+            self.handle_image_uploads(filesDict['image'])
         try:
             self.validate(requestDict)
         except ValidationError as e:
@@ -181,6 +233,14 @@ class AdminLocationViewSet(LocationViewSet):
     # OVERRIDE PARTIAL_UPDATE HOOK FOR HANDLING PATCH REQUESTS
     def partial_update(self, request, pk=None):
         requestDict = request.data
+        # if multipart/form data, parse it into native Python dict
+        if isinstance(requestDict, QueryDict):
+            requestDict = self.parse_querydict(requestDict)
+        # if image files uploaded, parse them and upload
+        filesDict = dict(request.FILES)
+        if filesDict.get('image'):
+            savedFileNames = self.handle_image_uploads(filesDict['image'])
+            print("savedFileNames => {}".format(savedFileNames))
         try:
             self.validate(requestDict)
         except ValidationError as e:

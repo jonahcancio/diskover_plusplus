@@ -40,7 +40,6 @@ class LocationAdminRetrieveSerializer(LocationAdminListSerializer):
 
     def get_subareas(self, obj):
         queryset = Location.objects.filter(building__building=obj)
-        print(queryset)
         serializer = LocationSimpleSerializer(instance=queryset, many=True)
         return serializer.data or None
 
@@ -71,7 +70,6 @@ class LocationAdminCudSerializer(LocationAdminListSerializer):
 
     def get_subareas(self, obj):
         queryset = Location.objects.filter(building__building=obj)
-        print(queryset)
         serializer = LocationSimpleSerializer(instance=queryset, many=True)
         return [sub['id'] for sub in serializer.data] or None
 
