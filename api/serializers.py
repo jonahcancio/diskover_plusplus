@@ -168,4 +168,4 @@ class LocationSimpleSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ('img_url',)
+        fields = ('img_url', 'id')

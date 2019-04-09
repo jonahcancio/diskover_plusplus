@@ -37,8 +37,6 @@ class LocationPagination(PageNumberPagination):
         })
 
 # Viewset for Location
-
-
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
     pagination_class = LocationPagination
@@ -97,8 +95,8 @@ class LocationViewSet(viewsets.ModelViewSet):
         else:
             return queryset
 
-# Viewset for locations that admin can CRUD
 
+# Viewset for locations that admin can CRUD
 class AdminLocationViewSet(LocationViewSet):
     queryset = Location.objects.all()
     permission_classes = [AllowAny]
@@ -120,6 +118,26 @@ class AdminLocationViewSet(LocationViewSet):
             return filtered_queryset
         else:
             return queryset
+
+    # returns the dictionary version of input querydict, useful for handling multipart form data
+    def parse_querydict(self, queryDict):
+        parsedDict = dict(queryDict)
+        parsedDict['name'] = parsedDict.get('name') and parsedDict['name'][0]
+        parsedDict['category'] = parsedDict.get(
+            'category') and int(parsedDict['category'][0])
+        parsedDict['description'] = parsedDict.get(
+            'description') and parsedDict['description'][0]
+        parsedDict['more_info'] = parsedDict.get(
+            'more_info') and parsedDict['more_info'][0]
+        parsedDict['lat'] = parsedDict.get('lat') and int(parsedDict['lat'][0])
+        parsedDict['lng'] = parsedDict.get('lng') and int(parsedDict['lng'][0])
+        parsedDict['subareas'] = parsedDict.get(
+            'subareas') and [int(sub) for sub in parsedDict['subareas']]
+        parsedDict['main_building'] = parsedDict.get(
+            'main_building') and int(parsedDict['main_building'][0])
+        parsedDict['tags'] = parsedDict.get(
+            'tags') and [int(tag) for tag in parsedDict['tags']]
+        return parsedDict
 
     def validate(self, requestDict):
         # assume it's valid first
@@ -147,29 +165,9 @@ class AdminLocationViewSet(LocationViewSet):
         if not isValid:
             raise ValidationError(errorDict)
 
-    # returns the dictionary version of input querydict, useful for handling multipart form data
-    def parse_querydict(self, queryDict):
-        parsedDict = dict(queryDict)
-        parsedDict['name'] = parsedDict.get('name') and parsedDict['name'][0]
-        parsedDict['category'] = parsedDict.get(
-            'category') and int(parsedDict['category'][0])
-        parsedDict['description'] = parsedDict.get(
-            'description') and parsedDict['description'][0]
-        parsedDict['more_info'] = parsedDict.get(
-            'more_info') and parsedDict['more_info'][0]
-        parsedDict['lat'] = parsedDict.get('lat') and int(parsedDict['lat'][0])
-        parsedDict['lng'] = parsedDict.get('lng') and int(parsedDict['lng'][0])
-        parsedDict['subareas'] = parsedDict.get(
-            'subareas') and [int(sub) for sub in parsedDict['subareas']]
-        parsedDict['main_building'] = parsedDict.get(
-            'main_building') and int(parsedDict['main_building'][0])
-        parsedDict['tags'] = parsedDict.get(
-            'tags') and [int(tag) for tag in parsedDict['tags']]
-        return parsedDict
-
     # input imageFiles list and writes them to static/images directory
     def handle_image_uploads(self, imageFiles):
-        savedFileNames = []        
+        savedFileNames = []
         for imageFile in imageFiles:
             copyCount = 1
             fileName, fileExt = os.path.splitext(imageFile.name)
@@ -186,7 +184,6 @@ class AdminLocationViewSet(LocationViewSet):
                     destination.write(chunk)
             savedFileNames.append(newFileName)
         return savedFileNames
-
 
     # OVERRIDE CREATE HOOK FOR HANDLING POST REQUESTS
     def create(self, request):
@@ -308,9 +305,152 @@ class AdminLocationViewSet(LocationViewSet):
             })
         deleteData = LocationAdminCrudSerializer(instance=deletedLocation).data
         deleteNum, deleteInfo = deletedLocation.delete()
-
-        print("deleteData => {}".format(deleteData))
+        
         return Response({
             'data': deleteData,
             'info': deleteInfo
+        })
+
+
+class ImageViewSet(viewsets.ModelViewSet):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
+    permission_classes = [AllowAny]
+
+    def filter_queryset(self, queryset):
+        locationId = self.request.query_params.get("location_id")
+        if locationId and locationId.isdigit():
+            if int(locationId) > 0:
+                queryset = queryset.filter(location__id=locationId)
+            else:
+                queryset = queryset.filter(location=None)
+
+        return queryset
+
+    # returns the dictionary version of input querydict, useful for handling multipart form data
+    def parse_querydict(self, queryDict):
+        parsedDict = dict(queryDict)
+        parsedDict['location_id'] = parsedDict.get(
+            'location_id') and int(parsedDict['location_id'][0])
+        return parsedDict
+
+    def validate(self, requestDict):
+        # assume it's valid first
+        isValid = True
+        # error dict starts empty because assumed valid
+        errorDict = {}
+        # validate location_id
+        locationId = requestDict.get('location_id')
+        if locationId:
+            if not isinstance(locationId, int):
+                isValid = False
+                errorDict['location_id'] = "should be integer"
+            elif locationId > 0 and Location.objects.filter(pk=locationId).count() < 1:
+                isValid = False
+                errorDict['location_id'] = "Location with id={} not found".format(
+                    locationId)
+        else:
+            isValid = False
+            errorDict['location_id'] = "This field is required; set to -1 if you want unbinded"
+
+        # validate images
+        images = requestDict.get('image')
+        if not images:
+            isValid = False
+            errorDict['image'] = "No images received"
+
+        if not isValid:
+            raise ValidationError(errorDict)
+
+    # input imageFiles list and writes them to static/images directory
+    def save_location_images(self, imageFiles):
+        savedFileNames = []
+        for imageFile in imageFiles:
+            copyCount = 1
+            fileName, fileExt = os.path.splitext(imageFile.name)
+            newFileName = fileName
+            while True:
+                filePath = "{}{}{}".format(
+                    SAVED_IMAGES_LOCATION, newFileName, fileExt)
+                if not os.path.exists(filePath):
+                    break
+                newFileName = "{}_{}".format(fileName, copyCount)
+                copyCount += 1
+            os.makedirs(os.path.dirname(filePath), exist_ok=True)
+            with open(filePath, 'wb+') as destination:
+                for chunk in imageFile.chunks():
+                    destination.write(chunk)
+            savedFileNames.append(newFileName + fileExt)
+        return savedFileNames
+
+    # OVERRIDE METHOD FOR HANDLING POST
+    def create(self, request):
+        requestDict = request.data
+        if isinstance(requestDict, QueryDict):
+            requestDict = self.parse_querydict(requestDict)
+        try:
+            self.validate(requestDict)
+        except ValidationError as e:
+            return Response(e.detail)
+
+        # add images to storage
+        filesDict = dict(request.FILES)
+        locationId = requestDict.get('location_id')
+        savedFileNames = []
+        imageObjs = []
+        savedFileNames = self.save_location_images(filesDict['image'])
+
+        # add images to database
+        Image.reset_id_sequence()
+        for img_url in savedFileNames:
+            img = Image.objects.create(img_url=img_url)
+            imageObjs.append(img)
+        if locationId > 0:
+            # bind images to location if locationId is specified
+            locationObj = Location.objects.get(pk=locationId)
+            locationObj.images.add(*imageObjs)
+
+        # create response
+        responseDict = {'img_urls': savedFileNames}
+        responseDict['img_urls'] = ImageSerializer(instance=imageObjs, many=True).data
+        if locationId:
+            responseDict['location_id'] = locationId
+
+        return Response(responseDict)
+
+    # OVERRIDE METHOD FOR HANDLING DELETE
+    def destroy(self, request, pk=None):
+        # validate first if image to be deleted exists
+        try:
+            imageObj = Image.objects.get(pk=pk)
+        except:
+            return Response({
+                 'info': "cannot find image with id {}".format(pk)
+            })
+
+        # delete image from storage
+        fileName = imageObj.img_url
+        filePath = "{}{}".format(SAVED_IMAGES_LOCATION, fileName)
+        print("filePath => {}".format(filePath))
+        if os.path.exists(filePath):
+            os.remove(filePath)
+
+        # delete image from database
+        deleteData = ImageSerializer(instance=imageObj).data
+        deleteNum, deleteInfo = imageObj.delete()
+
+        return Response({
+            'data': deleteData,
+            'info': deleteInfo
+        })
+
+    # OVERRIDE PUTS AND PATCH TO DO NOTHING
+    def update(self, request, pk=None):
+        return Response({
+            'images': 'PUT requests not allowed'
+        })
+
+    def partial_update(self, request, pk=None):
+        return Response({
+            'images': 'PUT requests not allowed'
         })
