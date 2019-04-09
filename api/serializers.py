@@ -20,50 +20,7 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('id', 'name')
 
-
-class LocationAdminListSerializer(serializers.ModelSerializer):
-    thumbnail_url = serializers.SerializerMethodField()
-
-    def get_thumbnail_url(self, obj):
-        queryset = Image.objects.filter(location=obj.name).first()
-        serializer = ImageSerializer(instance=queryset)
-        return serializer.data["img_url"]
-
-    class Meta:
-        model = Location
-        fields = ('id', 'name', 'category', 'description', 'thumbnail_url')
-
-class LocationAdminRetrieveSerializer(LocationAdminListSerializer):
-    subareas = serializers.SerializerMethodField()
-    main_building = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
-
-    def get_subareas(self, obj):
-        queryset = Location.objects.filter(building__building=obj)
-        serializer = LocationSimpleSerializer(instance=queryset, many=True)
-        return serializer.data or None
-
-    def get_main_building(self, obj):
-        try:
-            queryset = Location.objects.get(subareas__sub=obj)
-            serializer = LocationSimpleSerializer(instance=queryset)
-            return serializer.data
-        except:
-            return None
-
-    def get_tags(self, obj):
-        queryset = obj.tags.all()
-        serializer = TagSerializer(instance=queryset, many=True)
-        return serializer.data or None
-
-    class Meta:
-        model = Location
-        fields = ('id', 'name', 'category', 'description', 'more_info',
-                  'lat', 'lng', 'subareas', 'main_building', 'tags')
-        depth = 1
-
-
-class LocationAdminCudSerializer(LocationAdminListSerializer):
+class LocationAdminCrudSerializer(serializers.ModelSerializer):
     subareas = serializers.SerializerMethodField()
     main_building = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
@@ -148,7 +105,7 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
         return nearbyList
 
     def get_img_urls(self, obj):
-        queryset = Image.objects.filter(location=obj.name)
+        queryset = Image.objects.filter(location=obj)
         serializer = ImageSerializer(instance=queryset, many=True)
         return [img['img_url'] for img in serializer.data]
 
@@ -193,7 +150,7 @@ class LocationListSerializer(serializers.ModelSerializer):
     thumbnail_url = serializers.SerializerMethodField()
 
     def get_thumbnail_url(self, obj):
-        queryset = Image.objects.filter(location=obj.name).first()
+        queryset = Image.objects.filter(location=obj).first()
         serializer = ImageSerializer(instance=queryset)
         return serializer.data["img_url"]
 

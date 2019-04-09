@@ -99,7 +99,6 @@ class LocationViewSet(viewsets.ModelViewSet):
 
 # Viewset for locations that admin can CRUD
 
-
 class AdminLocationViewSet(LocationViewSet):
     queryset = Location.objects.all()
     permission_classes = [AllowAny]
@@ -109,7 +108,7 @@ class AdminLocationViewSet(LocationViewSet):
         if self.action == 'list':
             return LocationSimpleSerializer
         else:
-            return LocationAdminCudSerializer
+            return LocationAdminCrudSerializer
 
     def filter_queryset(self, queryset):
         queryset = super().filter_queryset(queryset)
@@ -307,7 +306,7 @@ class AdminLocationViewSet(LocationViewSet):
             return Response({
                 'info': "cannot find location with id {}".format(pk)
             })
-        deleteData = LocationAdminCudSerializer(instance=deletedLocation).data
+        deleteData = LocationAdminCrudSerializer(instance=deletedLocation).data
         deleteNum, deleteInfo = deletedLocation.delete()
 
         print("deleteData => {}".format(deleteData))
