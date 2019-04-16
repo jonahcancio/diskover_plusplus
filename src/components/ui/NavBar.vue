@@ -7,6 +7,7 @@
       <v-btn to="/" class="white--text" flat>Diskover++</v-btn>
       <!-- Button for displaying GPS configuration modals -->
       <v-btn class="white--text" flat @click="openGpsModal">Configure GPS</v-btn>
+      <v-btn class="white--text" flat to="/form/create">Create new location</v-btn>
 
       <!-- Create new location link -->
       <!-- <v-btn to="/form/create" class="white--text" flat>New Location</v-btn> -->

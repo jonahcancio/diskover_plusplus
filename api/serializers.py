@@ -20,6 +20,7 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('id', 'name')
 
+
 class LocationAdminCrudSerializer(serializers.ModelSerializer):
     subareas = serializers.SerializerMethodField()
     main_building = serializers.SerializerMethodField()
@@ -45,37 +46,34 @@ class LocationAdminCrudSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('id', 'name', 'category', 'description', 'more_info',
-                  'lat', 'lng', 'subareas', 'main_building', 'tags')
+        fields = ('id', 'name', 'category', 'tags', 'description', 'more_info',
+                  'lat', 'lng', 'subareas', 'main_building')
 
 
 class LocationRetrieveSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    subareas = serializers.SerializerMethodField()
     main_building = serializers.SerializerMethodField()
-    inside_rooms = serializers.SerializerMethodField()
-    comfort_rooms = serializers.SerializerMethodField()
-    offices = serializers.SerializerMethodField()
-    food_services = serializers.SerializerMethodField()
-    entrances_exits = serializers.SerializerMethodField()
-    jeepney_stops = serializers.SerializerMethodField()
     DISTANCE_THRESHOLD = 150
     nearby_locations = serializers.SerializerMethodField()
     img_urls = serializers.SerializerMethodField()
 
+    def get_subareas(self, obj):
+        subareaDict = {}
+        for category in Category.objects.exclude(name="Buildings"):            
+            queryset = Location.objects.filter(building__building=obj, category=category)
+            serializer = LocationSimpleSerializer(instance=queryset, many=True)
+            subareaDict[category.name] = serializer.data or None
+        return subareaDict
+
     def get_main_building(self, obj):
         try:
-            queryset = Location.objects.get(
-                building__sub=obj, category__name="Buildings")
+            queryset = Location.objects.get(subareas__sub=obj)
             serializer = LocationSimpleSerializer(instance=queryset)
             return serializer.data
         except:
             return None
 
-    def get_inside_rooms(self, obj):
-        queryset = Location.objects.filter(
-            building__building=obj, category__name="Rooms")
-        serializer = LocationSimpleSerializer(instance=queryset, many=True)
-        return serializer.data or None
 
     # used to calculate distance in meters given 2 latlngs
     @staticmethod
@@ -109,41 +107,10 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
         serializer = ImageSerializer(instance=queryset, many=True)
         return [img['img_url'] for img in serializer.data]
 
-    def get_comfort_rooms(self, obj):
-        queryset = Location.objects.filter(
-            building__building=obj, category__name="Comfort Rooms")
-        serializer = LocationSimpleSerializer(instance=queryset, many=True)
-        return serializer.data or None
-
-    def get_offices(self, obj):
-        queryset = Location.objects.filter(
-            building__building=obj, category__name="Offices")
-        serializer = LocationSimpleSerializer(instance=queryset, many=True)
-        return serializer.data or None
-
-    def get_food_services(self, obj):
-        queryset = Location.objects.filter(
-            building__building=obj, category__name="Food Services")
-        serializer = LocationSimpleSerializer(instance=queryset, many=True)
-        return serializer.data or None
-
-    def get_entrances_exits(self, obj):
-        queryset = Location.objects.filter(
-            building__building=obj, category__name="Entrances/Exits")
-        serializer = LocationSimpleSerializer(instance=queryset, many=True)
-        return serializer.data or None
-
-    def get_jeepney_stops(self, obj):
-        queryset = Location.objects.filter(
-            building__building=obj, category__name="Jeepney Stops")
-        serializer = LocationSimpleSerializer(instance=queryset, many=True)
-        return serializer.data or None
-
     class Meta:
         model = Location
         fields = ('id', 'name', 'category', 'description', 'more_info', 'lat', 'lng',
-                  'main_building', 'inside_rooms', 'nearby_locations', 'img_urls',
-                  'comfort_rooms', 'offices', 'food_services', 'entrances_exits', 'jeepney_stops')
+                  'subareas', 'main_building', 'nearby_locations', 'img_urls')
 
 
 class LocationListSerializer(serializers.ModelSerializer):

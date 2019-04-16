@@ -27,7 +27,7 @@ export default {
     // reference active category filters from Vuex store
     tagsFilter: {
       get() {
-        return this.$store.state.admin.locations.tagsFilter;
+        return this.$store.state.search.tagsFilter;
       },
       // set active filters in Vuex store and trigger a change event when chip is selected
       set(value) {
