@@ -1,18 +1,22 @@
 <template>
     <v-data-table
-        v-if="locations instanceof Array"
+        v-if="categories instanceof Array"
         :headers="headers"
-        :items="locations"
+        :items="categories"
         class="elevation-1"
     >
-        <template v-slot:items="meow">
-            <td>{{meow.item.name}}</td>
-            <td>{{meow.item.description}}</td>
+        <template v-slot:items="category">
+            <td>{{category.item.name}}</td>
+            <td>{{category.item.url}}</td>
+            <td>
+                <v-icon :color="category.item.routeColor">navigation</v-icon>
+            </td>
+            <td class="justify-center">
+                <v-icon small class="mr-2" @click="onClickEdit(tag.item.id, $event)">edit</v-icon>
+                <v-icon small class="mr-2" @click="onClickDelete(tag.item.id,$event)">delete</v-icon>
+            </td>
         </template>
     </v-data-table>
-    <!-- <div>
-        Hi there!
-    </div> -->
 </template>
 
 <script>
@@ -21,8 +25,8 @@ export default {
         console.log("WHERE AM I",this.locations);
     },
     props:{
-        locations: {
-            type: [String, Array],
+        categories: {
+            type: [Array],
             default: []
         }
     },
@@ -30,7 +34,9 @@ export default {
         return{
             headers:[
                 {text: 'Name', value: 'name'},
-                {text: 'Description', value: 'description'}
+                {text: 'URL', value: 'url'},
+                {text: 'Route Color', value: 'routeColor'},
+                {text: 'Actions', value: ''}
             ],
         }
     },

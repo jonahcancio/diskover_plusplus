@@ -4,6 +4,13 @@ import VueRouter from 'vue-router'
 // import pages
 import HomePage from "@/pages/HomePage"
 import FormPage from "@/pages/FormPage"
+
+import CategoryTablePage from "@/pages/AdminPages/CategoryTablePage"
+import TagTablePage from "@/pages/AdminPages/TagTablePage"
+
+import CategoryFormPage from "@/pages/CategoryFormPage"
+import TagFormPage from "@/pages/TagFormPage"
+
 import MapPage from "@/pages/MapPage"
 import ResultSide from "@/pages/MapPage/ResultSide"
 import DetailSide from "@/pages/MapPage/DetailSide"
@@ -44,6 +51,16 @@ const router = new VueRouter({
       name: "form",
       component: FormPage
     },
+    {
+      path:"/admin/browse/categories",
+      component: CategoryTablePage,
+      name: "categorytable"
+    },
+    {
+      path:"/admin/browse/tags",
+      component: TagTablePage,
+      name: "tagtable"
+    },
     // faq page
     {
       path:"/faq",
@@ -65,6 +82,17 @@ const router = new VueRouter({
       path:"*",
       name: "404",
       component: Error404Page
+    },
+    //category form page
+    {
+      path:"/categoryform",
+      name: "categoryform",
+      component: CategoryFormPage,
+    },
+    {
+      path:"/tagform/:mode/:id?",
+      name: "tagform",
+      component: TagFormPage,
     }
 	]
 })
