@@ -4,7 +4,10 @@ import VueRouter from 'vue-router'
 // import pages
 import HomePage from "@/pages/HomePage"
 import FormPage from "@/pages/FormPage"
+
 import AdminPage from "@/pages/AdminPages/AdminLocationsPage"
+import CategoryTablePage from "@/pages/AdminPages/CategoryTablePage"
+import TagTablePage from "@/pages/AdminPages/TagTablePage"
 
 import CategoryFormPage from "@/pages/CategoryFormPage"
 import TagFormPage from "@/pages/TagFormPage"
@@ -52,6 +55,16 @@ const router = new VueRouter({
       path: "/admin/locations",
       component: AdminPage,
       name: "admin",
+    },
+    {
+      path:"/admin/browse/categories",
+      component: CategoryTablePage,
+      name: "categorytable"
+    },
+    {
+      path:"/admin/browse/tags",
+      component: TagTablePage,
+      name: "tagtable"
     },
     // faq page
     {

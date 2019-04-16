@@ -63,8 +63,11 @@ Vue.component("NearbyLocationsTabItem", NearbyLocationsTabItem)
 //Admin Page Components
 import CategoryDropdown from "@/components/admin/CategoryDropdown"
 import CategoryTable from "@/components/admin/CategoryTable"
+import TagTable from "@/components/admin/TagTable"
+
 Vue.component("CategoryDropdown", CategoryDropdown)
 Vue.component("CategoryTable", CategoryTable)
+Vue.component("TagTable", TagTable)
 
 import AdminResultCard from "@/components/admin/AdminResultCard"
 import AdminSortSelect from "@/components/admin/AdminSortSelect"
