@@ -6,6 +6,8 @@ export default {
 	state: {
 		// specify the location in detail's category
 		category: "",
+		// list of tags binded to location
+		tags: [],
 		// list of important coordinates used in the route (turns, corners)
 		routeCoordinates: [],
 		// list of routing instructions (directions to location in focus)
@@ -14,12 +16,12 @@ export default {
 		description: "",
 		// coordinates of the location in focus
 		endCoords: [],
-		// list of inside rooms of the location in focus
-		insideRooms: [],
-		// list of nearby locations to the location in focus
-		nearbyLocations: [],
+		// dictionary of subareas keyed by category names
+		subareas: [],
 		// the outer building of the location in focus if it's a room
 		mainBuilding: "",
+		// list of nearby locations to the location in focus
+		nearbyLocations: [],
 		// the image urls of the location in focus
 		imageUrls: [],
 	},
@@ -27,6 +29,10 @@ export default {
 		// set category
 		setCategory(state, newCategory) {
 			state.category = newCategory
+		},
+		// set tags
+		setTags(state, newTags) {
+			state.tags = newTags
 		},
 		// set important coordinates in route
 		setRouteCoordinates(state, newRouteCoordinates) {
@@ -48,9 +54,9 @@ export default {
 		setImageUrls(state, newImageUrls) {
 			state.imageUrls = newImageUrls
 		},
-		// set rooms inside location
-		setInsideRooms(state, newInsideRooms) {
-			state.insideRooms = newInsideRooms
+		// set subareas of a location
+		setSubareas(state, newSubareas) {
+			state.subareas = newSubareas
 		},
 		// set locations nearby to location
 		setNearbyLocations(state, newNearbyLocations) {
@@ -69,16 +75,21 @@ export default {
 			);
 		},
 		// returns wheter the current location HAS an main building
-		hasBuilding(state) {
+		hasMainBuilding(state) {
 			return state.mainBuilding != null
 		},
 		// returns whether the current location has inside_rooms
-		hasRooms(state) {
-			return state.insideRooms && state.insideRooms.length
+		hasSubareas(state) {
+			for (let category in state.subareas) {
+				if (state.subareas[category]) {
+					return true
+				}
+			}
+			return false
 		},
-		// returns whether the current location IS a building
-		isBuilding(state) {
-			return state.category == "Buildings"
+		// returns categories of subareas
+		subareaCategories(state) {
+			return Object.keys(state.subareas);
 		}
 	}
 }

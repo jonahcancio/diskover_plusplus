@@ -5,12 +5,12 @@ import VueRouter from 'vue-router'
 import HomePage from "@/pages/HomePage"
 import FormPage from "@/pages/FormPage"
 
-import AdminPage from "@/pages/AdminPages/AdminLocationsPage"
 import CategoryTablePage from "@/pages/AdminPages/CategoryTablePage"
 import TagTablePage from "@/pages/AdminPages/TagTablePage"
 
 import CategoryFormPage from "@/pages/CategoryFormPage"
 import TagFormPage from "@/pages/TagFormPage"
+
 import MapPage from "@/pages/MapPage"
 import ResultSide from "@/pages/MapPage/ResultSide"
 import DetailSide from "@/pages/MapPage/DetailSide"
@@ -18,6 +18,7 @@ import FaqPage from "@/pages/FaqPage"
 import Error404Page from "@/pages/Error404Page"
 
 import LoginPage from "@/pages/LoginPage"
+import DummyPage from "@/pages/DummyPage"
 
 // use vue router
 Vue.use(VueRouter)
@@ -50,12 +51,6 @@ const router = new VueRouter({
       name: "form",
       component: FormPage
     },
-    //test route for form page
-    {
-      path: "/admin/locations",
-      component: AdminPage,
-      name: "admin",
-    },
     {
       path:"/admin/browse/categories",
       component: CategoryTablePage,
@@ -76,6 +71,11 @@ const router = new VueRouter({
       path:"/login",
       name: "login",
       component: LoginPage,
+    },
+    {
+      path: "/dummy",
+      name: "dummy",
+      component: DummyPage
     },
     // Error 404 page catches all pages that don't match above routes
     {

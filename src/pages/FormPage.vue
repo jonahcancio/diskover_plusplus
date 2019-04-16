@@ -14,14 +14,31 @@
       <v-flex xs12>
         <label>Category</label>
         <v-select
-          :items="categories"
+          :items="categoryItems"
           placeholder="Category"
           color="black"
           :menu-props="{zIndex:'1001'}"
-          v-model="category"
+          v-model="categoryId"
           :readonly="isReadOnly"
           :error="isReadOnly"
         />
+      </v-flex>
+      <v-flex xs12>
+        <div class="maroon-chips">
+          <label>Tags</label>
+          <v-select
+            :items="tagItems"
+            placeholder="Tags"
+            color="black"
+            chips
+            deletable-chips
+            :menu-props="{zIndex:'1001'}"
+            multiple
+            v-model="tagIds"
+            :readonly="isReadOnly"
+            :error="isReadOnly"
+          />
+        </div>
       </v-flex>
       <v-flex xs12>
         <label>Description</label>
@@ -47,7 +64,51 @@
         </v-layout>
         <v-text-field label="Coordinates" readonly :error="isReadOnly" :value="coords"/>
       </v-flex>
-      <v-btn v-if="mode!='delete'" color="success" @click="handleSubmitClick()">Save Location</v-btn>
+      <v-flex xs12>
+        <div class="maroon-chips">
+          <v-autocomplete
+            v-model="subareaIds"
+            :items="subareaItems"
+            :search-input.sync="subareaSearch"
+            @input="subareaSearch=null"
+            multiple
+            cache-items
+            hide-selected
+            auto-select-first
+            chips
+            clearable
+            deletable-chips
+            label="Subareas"
+            placeholder="Search a subarea"
+            color="blue"
+            :menu-props="{zIndex:'1001'}"
+            :readonly="isReadOnly"
+            :error="isReadOnly"
+          />
+        </div>
+      </v-flex>
+      <v-flex x12>
+        <div class="maroon-chips">
+          <v-autocomplete
+            v-model="mainBuildingId"
+            :items="mainBuildingItems"
+            :search-input.sync="mainBuildingSearch"
+            @input="mainBuildingSearch=null"
+            cache-items
+            hide-selected
+            auto-select-first
+            clearable
+            label="Main Buidling"
+            placeholder="Search a main building"
+            color="blue"
+            :menu-props="{zIndex:'1001'}"
+            :readonly="isReadOnly"
+            :error="isReadOnly"
+          />
+        </div>
+      </v-flex>
+      <v-btn v-if="mode=='create'" color="success" @click="handleCreateClick()">Create Location</v-btn>
+      <v-btn v-else-if="mode=='update'" color="success" @click="handleUpdateClick()">Update Location</v-btn>
       <v-btn v-else color="error" @click="handleDeleteClick()">Delete Location</v-btn>
       <v-btn @click="handleCancelClick()">Cancel</v-btn>
     </v-layout>
@@ -56,18 +117,38 @@
 
 <script>
 export default {
+  mounted() {
+    this.handleRouteChange();
+    this.coords = this.defaultCoords;
+  },
   data() {
     return {
       name: "",
-      category: "",
+      categoryId: "",
+      tagIds: [],
       description: "",
       coords: [],
-      defaultCoords: this.$defaultStartCoords
+      defaultCoords: this.$defaultStartCoords,
+      subareaIds: [],
+      subareaSearch: "",
+      subareaItems: [],
+      mainBuildingId: -1,
+      mainBuildingSearch: "",
+      mainBuildingItems: []
     };
   },
   computed: {
-    categories() {
-      return this.$store.getters.categoryNames;
+    categoryItems() {
+      return this.$store.state.categories.map(cat => ({
+        text: cat.name,
+        value: cat.id
+      }));
+    },
+    tagItems() {
+      return this.$store.state.tags.map(tag => ({
+        text: tag.name,
+        value: tag.id
+      }));
     },
     isReadOnly() {
       return this.mode == "delete" ? true : false;
@@ -82,11 +163,13 @@ export default {
   watch: {
     $route(newRoute, oldRoute) {
       this.handleRouteChange();
+    },
+    subareaSearch(newSearch) {
+      this.apiGetSubareaItems(newSearch);
+    },
+    mainBuildingSearch(newSearch) {
+      this.apiGetMainBuildingItems(newSearch);
     }
-  },
-  mounted() {
-		this.handleRouteChange();
-		this.coords = this.defaultCoords
   },
   methods: {
     resetMapView() {
@@ -96,25 +179,39 @@ export default {
       this.coords = newCoords;
     },
     handleRouteChange() {
+      this.apiGetSubareaItems("");
+      this.apiGetMainBuildingItems("");
       if (this.mode == "update" || this.mode == "delete") {
-        console.log("mode: ", this.mode);
         this.getUpdateData(this.id);
       }
     },
     getUpdateData(id) {
       this.$http
-        .get(`/locations/${id}`)
+        .get(`/admin/locations/${id}`)
         .then(response => {
           console.log(
             "successful retrieved location update/delete data from API: ",
             response.data
           );
-          let { name, category, description, lat, lng } = response.data;
+          let {
+            name,
+            category,
+            tags,
+            description,
+            lat,
+            lng,
+            subareas,
+            main_building
+          } = response.data;
           this.name = name;
-          this.category = category;
+          this.categoryId = category;
+          this.tagIds = tags;
           this.description = description;
           this.defaultCoords = [lat, lng];
           this.coords = [lat, lng];
+          this.subareaIds = subareas;
+          this.mainBuildingId = main_building;
+          console.log(main_building);
         })
         .catch(error => {
           console.log(
@@ -123,22 +220,65 @@ export default {
           );
         });
     },
+    apiGetSubareaItems(searchValue) {
+      this.$http
+        .get(`/admin/locations`, {
+          params: {
+            search: searchValue
+            // category_ids: [2, 3, 4, 5, 6, 7, 8]
+          },
+          paramsSerializer: params => {
+            return this.$qs.stringify(params, { indices: false });
+          }
+        })
+        .then(response => {
+          this.subareaItems = response.data.map(sub => {
+            return {
+              text: sub.name,
+              value: sub.id
+            };
+          });
+        })
+        // alert an error if unsuccessful GET
+        .catch(error => {
+          alert("error receiving queried results from API: ");
+          console.log(error);
+        })
+        .finally(() => (this.isLoading = false));
+    },
+    apiGetMainBuildingItems(searchValue) {
+      this.$http
+        .get(`/admin/locations`, {
+          params: {
+            search: searchValue
+            // category_ids: [1]
+          },
+          paramsSerializer: params => {
+            return this.$qs.stringify(params, { indices: false });
+          }
+        })
+        .then(response => {
+          this.mainBuildingItems = response.data.map(building => {
+            return {
+              text: building.name,
+              value: building.id
+            };
+          });
+        })
+        // alert an error if unsuccessful GET
+        .catch(error => {
+          alert("error receiving queried results from API: ");
+          console.log(error);
+        })
+        .finally(() => (this.isLoading = false));
+    },
 
     handleCancelClick() {
       this.$router.go(-1);
     },
-    handleSubmitClick() {
-      if (this.mode == "create") {
-        console.log("You are creating new location");
-        this.postSubmittedData();
-      } else {
-        console.log("You are editting");
-        this.patchSubmittedData();
-      }
-    },
     handleDeleteClick() {
       this.$http
-        .delete(`/locations/${this.id}`)
+        .delete(`/admin/locations/${this.id}/`)
         .then(response => {
           console.log("successfully deleted location from API", response);
           this.$router.push(`/map/search`);
@@ -147,15 +287,17 @@ export default {
           console.log("error deleting location to API", error);
         });
     },
-    postSubmittedData() {
+    handleCreateClick() {
       this.$http
-        .post(`/locations/`, {
+        .post(`/admin/locations/`, {
           name: this.name,
-          category: this.category,
+          category: this.categoryId,
+          tags: this.tagIds,
           description: this.description,
           lat: this.coords[0],
           lng: this.coords[1],
-          url: "/"
+          subareas: this.subareaIds,
+          main_building: this.mainBuildingId
         })
         .then(response => {
           console.log("successfully posted new location to API", response);
@@ -165,15 +307,17 @@ export default {
           console.log("error posting new location to API", error);
         });
     },
-    patchSubmittedData() {
+    handleUpdateClick() {
       this.$http
-        .patch(`/locations/${this.id}`, {
+        .patch(`/admin/locations/${this.id}/`, {
           name: this.name,
-          category: this.category,
+          category: this.categoryId,
+          tags: this.tagIds,
           description: this.description,
           lat: this.coords[0],
           lng: this.coords[1],
-          url: "/"
+          subareas: this.subareaIds,
+          main_building: this.mainBuildingId
         })
         .then(response => {
           console.log("successfully patched updated location to API", response);
@@ -187,9 +331,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 label {
   font-weight: bold !important;
   font-size: 16px !important;
+}
+
+.maroon-chips .v-chip {
+  background-color: var(--v-primary-base) !important;
+  color: white;
 }
 </style>

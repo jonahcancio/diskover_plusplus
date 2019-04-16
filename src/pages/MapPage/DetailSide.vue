@@ -18,14 +18,12 @@
       Category:
       <router-link
         :to="{path:'/map/search', query:{category: locationObj.category}}"
-      >
-        {{ locationObj.category }}
-      </router-link>
+      >{{ locationObj.category }}</router-link>
     </v-flex>
     <!-- Primary detais tab -->
     <v-flex class="mt-3">
       <v-tabs
-        v-model="currentTab1"
+        v-model="primaryTabIndex"
         color="primary"
         slider-color="secondary"
         dark
@@ -54,43 +52,70 @@
         </v-tab-item>
       </v-tabs>
     </v-flex>
-    <!-- Related detais tab --> 
-    <v-flex class="mt-3">
-      <v-tabs
-        v-model="currentTab2"
+    <v-flex class="my-3" v-if="hasSubareas">
+      <!-- <v-tabs
         color="primary"
-        slider-color="secondary"
+        slide-color="secondary"
         dark
+        v-model="subareaTabIndex"
         centered
         grow
         max="400px"
+        show-arrows
       >
-        <!-- related details tab navigation -->
-        <v-tab v-for="(tab, i) in tabList2" :key="i">
+        <v-tab v-for="(subs, category, i) in subareas" :key="i">{{ category }}</v-tab>
+          <v-tab-item v-for="(subs, category, i) in subareas" :key="i">
+            <SubareaTabItem :subareas="subs" :label="category"/>
+          </v-tab-item>
+      </v-tabs> -->
+      <v-expansion-panel v-model="subareaTabIndex"  id="subarea-panels">
+        <v-expansion-panel-content v-for="(subs, category, i) in subareas" :key="i">
+          <template v-slot:header>
+            <div>{{category}}</div>
+          </template>
+          <SubareaTabItem :subareas="subs" :label="category"/>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-flex>
+    <v-flex class="mt-2" v-if="hasMainBuilding">
+      <v-tabs color="primary" slide-color="secondary" dark centered>
+        <v-tab>
           <v-layout column>
-            <v-icon>{{ tab.icon }}</v-icon>
-            <div>{{tab.label}}</div>
+            <v-icon>location_city</v-icon>
+            <div>Main Building</div>
           </v-layout>
         </v-tab>
-        <!-- Nearby Locations Tab -->
         <v-tab-item>
-          <NearbyLocationsTabItem/>
-        </v-tab-item>
-        <!-- Rooms and Building Tab -->
-        <v-tab-item v-if="showRoomBuilding">
-          <RoomBuildingTabItem/>
+          <MainBuildingTabItem :building="mainBuilding"/>
         </v-tab-item>
       </v-tabs>
     </v-flex>
-    <!-- <v-layout justify-space-around class="mt-4">
+    <v-flex class="mt-2">
+      <v-tabs color="primary" slide-color="secondary" dark centered>
+        <v-tab>
+          <v-layout column>
+            <v-icon>directions_walk</v-icon>
+            <div>Nearby Locations</div>
+          </v-layout>
+        </v-tab>
+        <v-tab-item>
+          <NearbyLocationsTabItem/>
+        </v-tab-item>
+      </v-tabs>
+    </v-flex>
+    <v-layout justify-space-around class="mt-4">
       <v-btn dark color="blue" :to="`/form/update/${locationId}`">Update</v-btn>
       <v-btn color="error" :to="`/form/delete/${locationId}`">Delete</v-btn>
-    </v-layout>-->
+    </v-layout>
   </v-layout>
 </template>
 
 <script>
 export default {
+  created() {
+    // fetches location data into locationObj
+    this.apiGetLocationData();
+  },
   data() {
     return {
       // object contains all details of object
@@ -98,15 +123,15 @@ export default {
       // default thumbnail img-url
       defaultThumbnail: require("@/assets/no-thumbnail.jpg"),
       // index of primary details tabs
-      currentTab1: 0,
+      primaryTabIndex: 0,
       // index of related details tabs
-      currentTab2: 0,
+      subareaTabIndex: 0,
       // list of tabs used for primary details tab navigation
       tabList1: [
         { label: "Directions", icon: "directions" },
         { label: "Images", icon: "collections" },
         { label: "Description", icon: "description" }
-      ]
+      ],
     };
   },
   computed: {
@@ -118,32 +143,26 @@ export default {
     thumbnailUrl() {
       return this.$store.getters["details/fullImageUrls"][0];
     },
-    // list of tabs used for related details tab navigation
-    tabList2() {
-      let tabList2 = [{ label: "Nearby Locations", icon: "directions_walk" }];
-      if (this.$store.getters["details/isBuilding"]) {
-        tabList2.push({ label: "Rooms Inside", icon: "meeting_room" });
-      } else if (this.$store.getters["details/hasBuilding"]) {
-        tabList2.push({ label: "Main Building", icon: "location_city" });
-      }
-      return tabList2;
+    subareas() {
+      return this.$store.state.details.subareas;
     },
-    // returns true if location is a building or room and a separate Building Room tab
-    showRoomBuilding() {
-      return this.$store.getters["details/hasBuilding"] || this.$store.getters["details/isBuilding"]
+    hasSubareas() {
+      return this.$store.getters["details/hasSubareas"];
+    },
+    mainBuilding() {
+      return this.$store.state.details.mainBuilding;
+    },
+    hasMainBuilding() {
+      return this.$store.getters["details/hasMainBuilding"];
     }
-  },
-  created() {
-    // fetches location data into locationObj
-    this.apiGetLocationData();
   },
   watch: {
     $route() {
       // refetch location data into locationObj
       this.apiGetLocationData();
       // reset both tab-indexes to first tab
-      this.currentTab1 = this.currentTab2 = 0;
-    }
+      this.primaryTabIndex = this.subareaTabIndex = 0;
+    },
   },
   methods: {
     // calls HTTP GET request for retrieving details of the location at locationId
@@ -153,16 +172,25 @@ export default {
           .get(`/locations/${this.locationId}`)
           // stores location data to the details module of Vuex Store if GET successful
           .then(response => {
-            console.log(response)
+            console.log(response);
             this.locationObj = response.data;
             let { lat, lng } = response.data;
             this.$store.commit("details/setCategory", response.data.category);
-            this.$store.commit("details/setDescription", response.data.description);
+            this.$store.commit(
+              "details/setDescription",
+              response.data.description
+            );
             this.$store.commit("details/setEndCoords", [lat, lng]);
             this.$store.commit("details/setImageUrls", response.data.img_urls);
-            this.$store.commit("details/setInsideRooms", response.data.inside_rooms);
-            this.$store.commit("details/setNearbyLocations", response.data.nearby_locations);
-            this.$store.commit("details/setMainBuilding", response.data.main_building);
+            this.$store.commit("details/setSubareas", response.data.subareas);
+            this.$store.commit(
+              "details/setNearbyLocations",
+              response.data.nearby_locations
+            );
+            this.$store.commit(
+              "details/setMainBuilding",
+              response.data.main_building
+            );
           })
           // alerts error and resets Vuex Store coordinates if GET unsuccessful
           .catch(error => {
@@ -176,8 +204,13 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .semi-dark-bg {
   background-color: rgba(0, 0, 0, 0.7);
+}
+
+#subarea-panels .v-expansion-panel__header {
+    background-color: var(--v-primary-base) !important;
+    color: white;
 }
 </style>

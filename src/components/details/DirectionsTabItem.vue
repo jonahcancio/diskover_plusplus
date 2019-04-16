@@ -5,9 +5,9 @@
     <v-list v-if="instructions && instructions.length">
       <!-- add activation of direction in Big Map upon clicking it -->
       <v-list-tile
-        v-for="(inst, index) in instructions"
+        v-for="inst in instructions"
         :class="bgClass(index)"
-        :key="index"
+        :key="inst.index"
         @click="toggleActivation(index)"
       >
         <v-list-tile-content>
