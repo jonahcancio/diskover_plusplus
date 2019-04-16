@@ -14,6 +14,9 @@ class Category(models.Model):
     routeMarker = models.CharField(max_length=260, blank=True, null=True)
     routeColor = models.CharField(max_length=7, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+    
     class Meta:
         db_table = 'category'
 
@@ -30,6 +33,9 @@ class Location(models.Model):
     url = models.CharField(max_length=100, blank=True, null=True)
     category = models.ForeignKey(
         Category, models.DO_NOTHING, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         db_table = 'location'
@@ -56,6 +62,9 @@ class Subarea(models.Model):
     building = models.ForeignKey(
         Location, related_name='subareas', on_delete=models.CASCADE, blank=True, null=True)
 
+    def __str__(self):
+        return self.sub.name
+        
     class Meta:
         db_table = 'subarea'
 
@@ -64,5 +73,8 @@ class Tag(models.Model):
     name = models.CharField(max_length=30)
     location = models.ManyToManyField(Location, related_name='tags')
 
+    def __str__(self):
+        return self.name
+        
     class Meta:
         db_table = 'tag'
