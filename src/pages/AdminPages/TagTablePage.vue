@@ -9,7 +9,7 @@
             </v-card-title>
             <v-layout>
                 <v-flex>
-                    <TagTable :tags="this.tags"/>
+                    <TagTable v-on:delete-item = "onDeleteItem" v-on:edit-item="onEditItem" :tags="this.tags"/>
                 </v-flex>
             </v-layout>
         </v-card>
@@ -41,6 +41,19 @@ export default{
         },
         onClickNewTag(){
             this.$router.push(`/tagform/create`)
+        },
+        onEditItem(id){
+            this.$router.push(`/tagform/update/${id}`)
+        },
+        onDeleteItem(id){
+            this.$http.delete(`tags/${id}`)
+            .then(response =>{
+                console.log("Successfully deleted item", response)
+                this.getTags()
+            })
+            .else(error =>{
+                console.log("Failed to delete item", error)
+            })
         }
     }
 }

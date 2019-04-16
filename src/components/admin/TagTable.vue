@@ -8,8 +8,8 @@
         <template v-slot:items="tag">
             <td>{{tag.item.name}}</td>
             <td class="justify-center">
-                <v-icon small class="mr-2" @click="onClickEdit(tag.item.id, $event)">edit</v-icon>
-                <v-icon small class="mr-2" @click="onClickDelete(tag.item.id,$event)">delete</v-icon>
+                <v-icon small class="mr-2" @click="$emit('edit-item',tag.item.id)">edit</v-icon>
+                <v-icon small class="mr-2" @click="$emit('delete-item', tag.item.id)">delete</v-icon>
             </td>
         </template>
     </v-data-table>
@@ -34,20 +34,5 @@ export default {
             ],
         }
     },
-    methods:{
-        onClickEdit(id){
-            this.$router.push(`/tagform/update/${id}`)
-        },
-        onClickDelete(id){
-            this.$http.delete(`tags/${id}`)
-            .then(response =>{
-                console.log("Successfully deleted item", response)
-                this.$router.go()
-            })
-            .else(error =>{
-                console.log("Failed to delete item", error)
-            })
-        }
-    }
 }
 </script>
