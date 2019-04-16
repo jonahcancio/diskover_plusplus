@@ -20,6 +20,17 @@
         :to="{path:'/map/search', query:{category: locationObj.category}}"
       >{{ locationObj.category }}</router-link>
     </v-flex>
+    <v-flex class="mt-2 title text-xs-left">
+      Tags: <span v-if="!tags.length">None</span>
+      <div v-else>
+        <router-link 
+          v-for="(tag, i) in tags" :key="i"
+          :to="{path:'/map/search', query:{tag: tag}}"
+        >
+          <v-chip color="primary" dark>{{tag}}</v-chip>
+        </router-link>
+      </div>
+    </v-flex>
     <!-- Primary detais tab -->
     <v-flex class="mt-3">
       <v-tabs
@@ -67,8 +78,8 @@
           <v-tab-item v-for="(subs, category, i) in subareas" :key="i">
             <SubareaTabItem :subareas="subs" :label="category"/>
           </v-tab-item>
-      </v-tabs> -->
-      <v-expansion-panel v-model="subareaTabIndex"  id="subarea-panels">
+      </v-tabs>-->
+      <v-expansion-panel v-model="subareaTabIndex" id="subarea-panels">
         <v-expansion-panel-content v-for="(subs, category, i) in subareas" :key="i">
           <template v-slot:header>
             <div>{{category}}</div>
@@ -131,7 +142,7 @@ export default {
         { label: "Directions", icon: "directions" },
         { label: "Images", icon: "collections" },
         { label: "Description", icon: "description" }
-      ],
+      ]
     };
   },
   computed: {
@@ -142,6 +153,9 @@ export default {
     // returns the the first img-url in the location as the thumbnail url
     thumbnailUrl() {
       return this.$store.getters["details/fullImageUrls"][0];
+    },
+    tags() {
+      return this.$store.state.details.tags;
     },
     subareas() {
       return this.$store.state.details.subareas;
@@ -162,7 +176,7 @@ export default {
       this.apiGetLocationData();
       // reset both tab-indexes to first tab
       this.primaryTabIndex = this.subareaTabIndex = 0;
-    },
+    }
   },
   methods: {
     // calls HTTP GET request for retrieving details of the location at locationId
@@ -176,6 +190,7 @@ export default {
             this.locationObj = response.data;
             let { lat, lng } = response.data;
             this.$store.commit("details/setCategory", response.data.category);
+            this.$store.commit("details/setTags", response.data.tags);
             this.$store.commit(
               "details/setDescription",
               response.data.description
@@ -210,7 +225,7 @@ export default {
 }
 
 #subarea-panels .v-expansion-panel__header {
-    background-color: var(--v-primary-base) !important;
-    color: white;
+  background-color: var(--v-primary-base) !important;
+  color: white;
 }
 </style>

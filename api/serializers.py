@@ -52,11 +52,17 @@ class LocationAdminCrudSerializer(serializers.ModelSerializer):
 
 class LocationRetrieveSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(slug_field='name', read_only=True)
+    tags = serializers.SlugRelatedField(slug_field='name', read_only=True, many=True)
     subareas = serializers.SerializerMethodField()
     main_building = serializers.SerializerMethodField()
     DISTANCE_THRESHOLD = 150
     nearby_locations = serializers.SerializerMethodField()
     img_urls = serializers.SerializerMethodField()
+
+    # def get_tags(self, obj):
+    #     queryset = obj.tags.all()
+    #     serializer = TagSerializer(instance=queryset, many=True)
+    #     return serializer.data or None
 
     def get_subareas(self, obj):
         subareaDict = {}
@@ -109,7 +115,7 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('id', 'name', 'category', 'description', 'more_info', 'lat', 'lng',
+        fields = ('id', 'name', 'category', 'tags', 'description', 'more_info', 'lat', 'lng',
                   'subareas', 'main_building', 'nearby_locations', 'img_urls')
 
 
