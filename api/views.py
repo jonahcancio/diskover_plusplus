@@ -8,9 +8,6 @@ from rest_framework.serializers import ValidationError
 from django.http.request import QueryDict
 import os
 
-# folder to store the saved images to
-SAVED_IMAGES_LOCATION = "api/static/"
-
 # Viewset for Category
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all().order_by('id')
@@ -164,35 +161,12 @@ class AdminLocationViewSet(LocationViewSet):
         if not isValid:
             raise ValidationError(errorDict)
 
-    # input imageFiles list and writes them to static/images directory
-    def handle_image_uploads(self, imageFiles):
-        savedFileNames = []
-        for imageFile in imageFiles:
-            copyCount = 1
-            fileName, fileExt = os.path.splitext(imageFile.name)
-            newFileName = fileName
-            while True:
-                filePath = "{}{}{}".format(SAVED_IMAGES_LOCATION, newFileName, fileExt)
-                if not os.path.exists(filePath):
-                    break
-                newFileName = "{}_{}".format(fileName, copyCount)
-                copyCount += 1
-            os.makedirs(os.path.dirname(filePath), exist_ok=True)
-            with open(filePath, 'wb+') as destination:
-                for chunk in imageFile.chunks():
-                    destination.write(chunk)
-            savedFileNames.append(newFileName)
-        return savedFileNames
-
     # OVERRIDE CREATE HOOK FOR HANDLING POST REQUESTS
     def create(self, request):
         requestDict = request.data
         if isinstance(requestDict, QueryDict):
             requestDict = self.parse_querydict(requestDict)
 
-        filesDict = dict(request.FILES)
-        if filesDict.get('image'):
-            self.handle_image_uploads(filesDict['image'])
         try:
             self.validate(requestDict)
         except ValidationError as e:
@@ -231,11 +205,7 @@ class AdminLocationViewSet(LocationViewSet):
         # if multipart/form data, parse it into native Python dict
         if isinstance(requestDict, QueryDict):
             requestDict = self.parse_querydict(requestDict)
-        # if image files uploaded, parse them and upload
-        filesDict = dict(request.FILES)
-        if filesDict.get('image'):
-            savedFileNames = self.handle_image_uploads(filesDict['image'])
-            print("savedFileNames => {}".format(savedFileNames))
+
         try:
             self.validate(requestDict)
         except ValidationError as e:
@@ -311,6 +281,127 @@ class AdminLocationViewSet(LocationViewSet):
         })
 
 
+# folder to store the saved images to
+SAVED_IMAGES_PATH = "api/static/upload_test/"
+SERVED_IMAGES_PATH = "static/upload_test/"
+
+# input imageFiles list and writes them to static/images directory
+def handle_image_uploads(imageFiles):
+    savedFileNames = []
+    for imageFile in imageFiles:
+        copyCount = 1
+        fileName, fileExt = os.path.splitext(imageFile.name)
+        newFileName = fileName
+        # loop to prevent duplicate fileNames
+        while True:
+            filePath = SAVED_IMAGES_PATH + newFileName + fileExt
+            if not os.path.exists(filePath):
+                break
+            newFileName = "{}_{}".format(fileName, copyCount)
+            copyCount += 1
+
+        # write in PATH TO SAVE IMAGES
+        os.makedirs(os.path.dirname(filePath), exist_ok=True)        
+        with open(filePath, 'wb+') as destination:
+            for chunk in imageFile.chunks():
+                destination.write(chunk)
+        # write in PATH TO SERVE IMAGES
+        filePath = SERVED_IMAGES_PATH + newFileName + fileExt
+        os.makedirs(os.path.dirname(filePath), exist_ok=True)        
+        with open(filePath, 'wb+') as destination:
+            for chunk in imageFile.chunks():
+                destination.write(chunk)
+        savedFileNames.append(newFileName + fileExt)
+    return savedFileNames
+
+def handle_image_deletions(imageUrl):
+    filesDeleted = []
+    # delete in PATH TO SAVE IMAGES
+    filePath = SAVED_IMAGES_PATH + imageUrl
+    if os.path.exists(filePath):
+        os.remove(filePath)
+        filesDeleted.append(filePath)
+
+    # delete in PATH TO SERVE IMAGES
+    filePath = SERVED_IMAGES_PATH + imageUrl
+    if os.path.exists(filePath):
+        os.remove(filePath)
+        filesDeleted.append(filePath)
+
+    return filesDeleted
+      
+    
+
+class AdminLocationImageViewSet(LocationViewSet):
+    queryset = Location.objects.all()
+    permission_classes = [AllowAny]
+    pagination_class = None
+
+    def get_serializer_class(self):
+        return LocationAdminImageSerializer
+
+    # returns the dictionary version of input querydict, useful for handling multipart form data
+    def parse_querydict(self, queryDict):
+        parsedDict = dict(queryDict)
+        try:
+            parsedDict['image_ids'] = parsedDict.get('image_ids') and [int(id) for id in parsedDict['image_ids']]
+        except:
+            parsedDict['image_ids'] = [0]
+        return parsedDict
+
+    # OVERRIDE PARTIAL_UPDATE HOOK FOR HANDLING PATCH REQUESTS
+    def partial_update(self, request, pk=None):
+        requestDict = request.data
+        # if multipart/form data, parse it into native Python dict
+        if isinstance(requestDict, QueryDict):
+            requestDict = self.parse_querydict(requestDict)
+        print(requestDict)
+
+        updatedLocation = Location.objects.get(pk=pk)
+
+        # handle binding of new image id set
+        if 'image_ids' in requestDict:
+            updatedLocation.images.clear()
+            if all(requestDict['image_ids']):        
+                updatedLocation.images.add(*requestDict['image_ids'])
+ 
+        # if image files uploaded, parse them and save to static directory
+        filesDict = dict(request.FILES)
+        savedFileNames = []
+        if filesDict.get('images'):
+            savedFileNames = handle_image_uploads(filesDict['images'])
+        
+        # bind new image uploads to corresponding location
+        Image.reset_id_sequence()
+        savedFileImages = [Image(img_url=fileName) for fileName in savedFileNames]
+        Image.objects.bulk_create(savedFileImages)
+        updatedLocation.images.add(*savedFileImages)
+
+        responseDict = {
+            'images': []
+        }
+        newImageSet = ImageSerializer(instance=updatedLocation.images.all(), many=True)
+        responseDict['images'].extend(newImageSet.data)
+
+        return Response(responseDict)
+
+
+    def create(self, request):
+        return Response({
+            'locations/images': 'POST requests not allowed'
+        })
+
+    def update(self, request, pk=None):
+        return Response({
+            'locations/images': 'PUT requests not allowed'
+        })
+
+    def destroy(self, request, pk=None):
+        return Response({
+            'locations/images': 'DELETE requests not allowed'
+        })
+
+
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
@@ -318,103 +409,35 @@ class ImageViewSet(viewsets.ModelViewSet):
 
     def filter_queryset(self, queryset):
         locationId = self.request.query_params.get("location_id")
-        if locationId and locationId.isdigit():
-            if int(locationId) > 0:
-                queryset = queryset.filter(location__id=locationId)
+        print(locationId)
+        try:
+            locationId = int(locationId)
+            if locationId:
+                return queryset.filter(location__id=locationId)
             else:
-                queryset = queryset.filter(location=None)
+                return queryset.filter(location=None)
+        except:
+            return queryset
 
-        return queryset
-
-    # returns the dictionary version of input querydict, useful for handling multipart form data
-    def parse_querydict(self, queryDict):
-        parsedDict = dict(queryDict)
-        parsedDict['location_id'] = parsedDict.get(
-            'location_id') and int(parsedDict['location_id'][0])
-        return parsedDict
-
-    def validate(self, requestDict):
-        # assume it's valid first
-        isValid = True
-        # error dict starts empty because assumed valid
-        errorDict = {}
-        # validate location_id
-        locationId = requestDict.get('location_id')
-        if locationId:
-            if not isinstance(locationId, int):
-                isValid = False
-                errorDict['location_id'] = "should be integer"
-            elif locationId > 0 and Location.objects.filter(pk=locationId).count() < 1:
-                isValid = False
-                errorDict['location_id'] = "Location with id={} not found".format(
-                    locationId)
-        else:
-            isValid = False
-            errorDict['location_id'] = "This field is required; set to -1 if you want unbinded"
-
-        # validate images
-        images = requestDict.get('image')
-        if not images:
-            isValid = False
-            errorDict['image'] = "No images received"
-
-        if not isValid:
-            raise ValidationError(errorDict)
-
-    # input imageFiles list and writes them to static/images directory
-    def save_location_images(self, imageFiles):
-        savedFileNames = []
-        for imageFile in imageFiles:
-            copyCount = 1
-            fileName, fileExt = os.path.splitext(imageFile.name)
-            newFileName = fileName
-            while True:
-                filePath = "{}{}{}".format(
-                    SAVED_IMAGES_LOCATION, newFileName, fileExt)
-                if not os.path.exists(filePath):
-                    break
-                newFileName = "{}_{}".format(fileName, copyCount)
-                copyCount += 1
-            os.makedirs(os.path.dirname(filePath), exist_ok=True)
-            with open(filePath, 'wb+') as destination:
-                for chunk in imageFile.chunks():
-                    destination.write(chunk)
-            savedFileNames.append(newFileName + fileExt)
-        return savedFileNames
 
     # OVERRIDE METHOD FOR HANDLING POST
     def create(self, request):
-        requestDict = request.data
-        if isinstance(requestDict, QueryDict):
-            requestDict = self.parse_querydict(requestDict)
-        try:
-            self.validate(requestDict)
-        except ValidationError as e:
-            return Response(e.detail)
-
-        # add images to storage
+        # if image files uploaded, parse them and save to static directory
         filesDict = dict(request.FILES)
-        locationId = requestDict.get('location_id')
         savedFileNames = []
-        imageObjs = []
-        savedFileNames = self.save_location_images(filesDict['image'])
+        if filesDict.get('images'):
+            savedFileNames = handle_image_uploads(filesDict['images'])
 
         # add images to database
         Image.reset_id_sequence()
-        for img_url in savedFileNames:
-            img = Image.objects.create(img_url=img_url)
-            imageObjs.append(img)
-        if locationId > 0:
-            # bind images to location if locationId is specified
-            locationObj = Location.objects.get(pk=locationId)
-            locationObj.images.add(*imageObjs)
+        savedFileImages = [Image(img_url=fileName) for fileName in savedFileNames]
+        Image.objects.bulk_create(savedFileImages)
 
         # create response
-        responseDict = {'img_urls': savedFileNames}
-        responseDict['img_urls'] = ImageSerializer(instance=imageObjs, many=True).data
-        if locationId:
-            responseDict['location_id'] = locationId
-
+        newImageSet = ImageSerializer(instance=savedFileImages, many=True)
+        responseDict = {
+            'images': newImageSet.data
+        }
         return Response(responseDict)
 
     # OVERRIDE METHOD FOR HANDLING DELETE
@@ -428,19 +451,17 @@ class ImageViewSet(viewsets.ModelViewSet):
             })
 
         # delete image from storage
-        fileName = imageObj.img_url
-        filePath = "{}{}".format(SAVED_IMAGES_LOCATION, fileName)
-        print("filePath => {}".format(filePath))
-        if os.path.exists(filePath):
-            os.remove(filePath)
+        filesDeleted = handle_image_deletions(imageObj.img_url)
 
-        # delete image from database
+        # save image in variable before deletion
         deleteData = ImageSerializer(instance=imageObj).data
+        # delete image from database
         deleteNum, deleteInfo = imageObj.delete()
 
         return Response({
             'data': deleteData,
-            'info': deleteInfo
+            'info': deleteInfo,
+            'file_deleted': filesDeleted
         })
 
     # OVERRIDE PUTS AND PATCH TO DO NOTHING
@@ -451,5 +472,5 @@ class ImageViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, pk=None):
         return Response({
-            'images': 'PUT requests not allowed'
+            'images': 'PATCH requests not allowed'
         })
