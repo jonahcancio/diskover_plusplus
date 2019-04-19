@@ -282,8 +282,8 @@ class AdminLocationViewSet(LocationViewSet):
 
 
 # folder to store the saved images to
-SAVED_IMAGES_PATH = "api/static/upload_test/"
-SERVED_IMAGES_PATH = "static/upload_test/"
+SAVED_IMAGES_PATH = "api/static/images/locations/"
+SERVED_IMAGES_PATH = "static/images/locations/"
 
 # input imageFiles list and writes them to static/images directory
 def handle_image_uploads(imageFiles):
@@ -362,7 +362,7 @@ class AdminLocationImageViewSet(LocationViewSet):
         # handle binding of new image id set
         if 'image_ids' in requestDict:
             updatedLocation.images.clear()
-            if all(requestDict['image_ids']):        
+            if requestDict['image_ids']:        
                 updatedLocation.images.add(*requestDict['image_ids'])
  
         # if image files uploaded, parse them and save to static directory

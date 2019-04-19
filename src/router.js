@@ -20,6 +20,8 @@ import Error404Page from "@/pages/Error404Page"
 import LoginPage from "@/pages/LoginPage"
 import DummyPage from "@/pages/DummyPage"
 
+import LocationImagesFormPage from "@/pages/AdminPages/LocationImagesFormPage"
+
 // use vue router
 Vue.use(VueRouter)
 
@@ -50,6 +52,11 @@ const router = new VueRouter({
       path: "/form/:mode/:id?",
       name: "form",
       component: FormPage
+    },
+    {
+      path: "/admin/location/images/form/:id",
+      name: "location_images_form",
+      component: LocationImagesFormPage
     },
     {
       path:"/admin/browse/categories",
