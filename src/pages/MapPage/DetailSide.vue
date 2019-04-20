@@ -21,12 +21,10 @@
       >{{ locationObj.category }}</router-link>
     </v-flex>
     <v-flex class="mt-2 title text-xs-left">
-      Tags: <span v-if="!tags.length">None</span>
+      Tags:
+      <span v-if="!tags.length">None</span>
       <div v-else>
-        <router-link 
-          v-for="(tag, i) in tags" :key="i"
-          :to="{path:'/map/search', query:{tag: tag}}"
-        >
+        <router-link v-for="(tag, i) in tags" :key="i" :to="{path:'/map/search', query:{tag: tag}}">
           <v-chip color="primary" dark>{{tag}}</v-chip>
         </router-link>
       </div>
@@ -114,9 +112,43 @@
         </v-tab-item>
       </v-tabs>
     </v-flex>
-    <v-layout justify-space-around class="mt-4">
-      <v-btn dark color="blue" :to="`/form/update/${locationId}`">Update</v-btn>
-      <v-btn color="error" :to="`/form/delete/${locationId}`">Delete</v-btn>
+    <v-layout align-space-around class="mt-4" column>
+      <v-layout justify-space-around>
+      <v-btn 
+        dark color="blue" 
+        :to="{
+          name: 'location_crud_form',
+          params: {
+            mode: 'update',
+            id:locationId
+          }
+        }"      
+      >
+        Update Info 
+      </v-btn>
+      <v-btn 
+        dark color="blue" 
+        :to="{
+          name: 'location_images_form',
+          params: {
+            id: locationId
+          }
+        }"      
+      >
+        Update Images
+      </v-btn>
+      </v-layout>
+      <v-btn color="error"
+         :to="{
+          name: 'location_crud_form',
+          params: {
+            mode: 'delete',
+            id:locationId
+          }
+        }"  
+      >
+        Delete
+      </v-btn>
     </v-layout>
   </v-layout>
 </template>
@@ -148,7 +180,7 @@ export default {
   computed: {
     // returns the location id based on route
     locationId() {
-      return Number(this.$route.params.locationId);
+      return Number(this.$route.params.id);
     },
     // returns the the first img-url in the location as the thumbnail url
     thumbnailUrl() {
