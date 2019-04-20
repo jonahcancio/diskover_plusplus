@@ -203,7 +203,7 @@ export default {
       });
       // output a routing error whenever routing has failed
       this.routing.on("routingerror", e => {
-        alert("Routing Error: ");
+        alert("OSRM Routing Error ");
         console.log(error.message)
         // reset instructions in Vuex store
         this.setInstructions([]);

@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 
 // import pages
 import HomePage from "@/pages/HomePage"
-import FormPage from "@/pages/FormPage"
+
 
 import CategoryTablePage from "@/pages/AdminPages/CategoryTablePage"
 import TagTablePage from "@/pages/AdminPages/TagTablePage"
@@ -20,7 +20,12 @@ import Error404Page from "@/pages/Error404Page"
 import LoginPage from "@/pages/LoginPage"
 import DummyPage from "@/pages/DummyPage"
 
+import AdminPages from "@/pages/AdminPages"
 import LocationImagesFormPage from "@/pages/AdminPages/LocationImagesFormPage"
+import DeleteImagesFormPage from "@/pages/AdminPages/DeleteImagesFormPage"
+import LocationCRUDFormPage from "@/pages/AdminPages/LocationCRUDFormPage"
+import UploadImagesFormPage from "@/pages/AdminPages/UploadImagesFormPage"
+import UnauthenticatedPage from "@/pages/AdminPages/UnauthenticatedPage"
 
 // use vue router
 Vue.use(VueRouter)
@@ -32,7 +37,7 @@ const router = new VueRouter({
   // define routes
   routes: [
     // home page
-		{
+    {
       path: "/",
       name: "home",
       component: HomePage
@@ -43,39 +48,61 @@ const router = new VueRouter({
       component: MapPage,
       name: "map",
       children: [
-        {path: "search", name: "search", component: ResultSide},
-        {path: "details/:locationId?", name: "details", component: DetailSide},
+        { path: "search", name: "search", component: ResultSide },
+        { path: "details/:id?", name: "details", component: DetailSide },
       ]
     },
     // form page for admin
     {
-      path: "/form/:mode/:id?",
-      name: "form",
-      component: FormPage
-    },
-    {
-      path: "/admin/location/images/form/:id",
-      name: "location_images_form",
-      component: LocationImagesFormPage
-    },
-    {
-      path:"/admin/browse/categories",
-      component: CategoryTablePage,
-      name: "categorytable"
-    },
-    {
-      path:"/admin/browse/tags",
-      component: TagTablePage,
-      name: "tagtable"
-    },
+      path: "/admin",
+      name: "admin",
+      component: AdminPages,
+      children: [
+        {
+          path: "location/form/:mode/:id?",
+          name: "location_crud_form",
+          component: LocationCRUDFormPage
+        },
+        {
+          path: "location/images/form/:id",
+          name: "location_images_form",
+          component: LocationImagesFormPage
+        },
+        {
+          path: "images/form/delete",
+          name: "delete_images_form",
+          component: DeleteImagesFormPage
+        },
+        {
+          path: "images/form/upload",
+          name: "upload_images_form",
+          component: UploadImagesFormPage
+        },
+        {
+          path: "browse/categories",
+          component: CategoryTablePage,
+          name: "categorytable"
+        },
+        {
+          path: "browse/tags",
+          component: TagTablePage,
+          name: "tagtable"
+        },
+        {
+          path: "*",
+          name: "unauthenticated",
+          component: UnauthenticatedPage
+        }
+      ]
+    },    
     // faq page
     {
-      path:"/faq",
+      path: "/faq",
       name: "faq",
       component: FaqPage,
     },
     {
-      path:"/login",
+      path: "/login",
       name: "login",
       component: LoginPage,
     },
@@ -84,24 +111,25 @@ const router = new VueRouter({
       name: "dummy",
       component: DummyPage
     },
-    // Error 404 page catches all pages that don't match above routes
-    {
-      path:"*",
-      name: "404",
-      component: Error404Page
-    },
     //category form page
     {
-      path:"/categoryform",
+      path: "/categoryform",
       name: "categoryform",
       component: CategoryFormPage,
     },
     {
-      path:"/tagform/:mode/:id?",
+      path: "/tagform/:mode/:id?",
       name: "tagform",
       component: TagFormPage,
-    }
-	]
+    },
+    // Error 404 page catches all pages that don't match above routes
+    {
+      path: "*",
+      name: "404",
+      component: Error404Page
+    },
+
+  ]
 })
 
 export default router;

@@ -14,7 +14,7 @@
           <v-checkbox v-model="selectedBindedImages" :value="image.id" color="primary">
             <div slot="label">
               <div>{{ image.img_url }}</div>
-              <v-img :src="getFullImageUrl(image.img_url)" height="150px"/>
+              <v-img :src="getFullImageUrl(image.img_url)" height="150px" contain/>
             </div>
           </v-checkbox>
         </div>
@@ -42,7 +42,7 @@
           <v-checkbox v-model="selectedSearchImages" :value="image.id" color="primary">
             <div slot="label">
               <div>{{ image.img_url }}</div>
-              <v-img :src="getFullImageUrl(image.img_url)" height="150px"/>
+              <v-img :src="getFullImageUrl(image.img_url)" height="150px" contain/>
             </div>
           </v-checkbox>
         </div>
@@ -201,15 +201,15 @@ export default {
         })
         .then(response => {
           console.log("successfully patched updated location to API", response);
+          this.$router.push({name: 'details', params: {id: this.locationId}});
         })
         .catch(function(error) {
           console.log("error patching updated location to API", error);
-        });
-      this.$router.go();
+        });      
     },
     handleCancelClick() {
       console.log("cancel");
-      this.$router.go();
+      this.$router.go(-1);
     }
   }
 };
