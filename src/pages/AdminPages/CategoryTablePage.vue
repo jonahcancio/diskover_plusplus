@@ -17,7 +17,10 @@
 </template>
 
 <script>
+import AdminVerifierMixin from "@/mixins/AdminVerifierMixin"
+
 export default{
+    mixins: [AdminVerifierMixin],
     computed:{
         // reference the category names from the Vuex store
         categories() {

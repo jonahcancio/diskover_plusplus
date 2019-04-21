@@ -59,7 +59,10 @@
 
 
 <script>
+import AdminVerifierMixin from "@/mixins/AdminVerifierMixin"
+
 export default {
+  mixins: [AdminVerifierMixin],
   created() {
     this.handleRouteChange();
   },

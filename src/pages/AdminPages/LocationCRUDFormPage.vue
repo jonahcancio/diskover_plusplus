@@ -116,7 +116,10 @@
 </template>
 
 <script>
+import AdminVerifierMixin from "@/mixins/AdminVerifierMixin"
+
 export default {
+  mixins: [AdminVerifierMixin],
   mounted() {
     this.handleRouteChange();
     this.coords = this.defaultCoords;

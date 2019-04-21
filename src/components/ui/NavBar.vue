@@ -7,17 +7,6 @@
       <v-btn to="/" class="white--text" flat>Diskover++</v-btn>
       <!-- Button for displaying GPS configuration modals -->
       <v-btn class="white--text" flat @click="openGpsModal">Configure GPS</v-btn>
-      <v-btn
-        class="white--text"
-        flat
-        :to="{
-          name:'location_crud_form',
-          params: {mode: 'create'}
-        }"
-      >Create new location</v-btn>
-
-      <!-- Create new location link -->
-      <!-- <v-btn to="/form/create" class="white--text" flat>New Location</v-btn> -->
     </v-toolbar-items>
     <v-spacer></v-spacer>
 
@@ -32,10 +21,7 @@
       <v-btn to="/faq" flat class="white--text">
         <span class="white--text">HELP</span>
       </v-btn>
-      <v-btn to="/login" flat class="white--text">
-        <span v-if="$store.getters['auth/isLoggedIn']">Logged in as {{ $store.state.auth.user }}</span>
-        <span v-else>Anonymous User</span>
-      </v-btn>
+      <AdminDropdown/>
     </v-toolbar-items>
 
     <!-- Mobile Version -->
@@ -52,28 +38,14 @@
         <v-toolbar-side-icon dark slot="activator" id="nav-dropdown-activator"/>
         <v-list id="nav-dropdown">
           <!-- Map link -->
-          <v-list-tile @click="{}" active-class="primary-text list-active">
-            <router-link to="/map">
+          <v-list-tile to="/map" active-class="primary-text list-active">
               <v-list-tile-title class="white--text" @click="showFullMap">MAP</v-list-tile-title>
-            </router-link>
           </v-list-tile>
           <!-- FAQs link -->
-          <v-list-tile @click="{}" active-class="primary-text list-active">
-            <router-link to="/faq">
+          <v-list-tile to="/faq" active-class="primary-text list-active">
               <v-list-tile-title class="white--text">HELP</v-list-tile-title>
-            </router-link>
           </v-list-tile>
-          <!-- Log in link -->
-          <v-list-tile @click="{}" active-class="primary-text list-active">
-            <router-link to="/login">
-              <v-list-tile-title class="white--text">
-                <span
-                  v-if="$store.getters['auth/isLoggedIn']"
-                >Logged in as {{ loggedInUser }}</span>
-                <span v-else>Anonymous User</span>
-              </v-list-tile-title>
-            </router-link>
-          </v-list-tile>
+          <AdminDropdown/>
         </v-list>
       </v-menu>
     </v-toolbar-items>
@@ -107,6 +79,7 @@ export default {
 
 #nav-dropdown {
   background-color: var(--v-primary-base) !important;
+  overflow: visible !important;
 }
 
 .list-active {

@@ -112,7 +112,10 @@
         </v-tab-item>
       </v-tabs>
     </v-flex>
-    <v-layout align-space-around class="mt-4" column>
+    <v-layout 
+      v-if="isLoggedIn"
+      align-space-around class="mt-4" column
+    >
       <v-layout justify-space-around>
       <v-btn 
         dark color="blue" 
@@ -200,6 +203,9 @@ export default {
     },
     hasMainBuilding() {
       return this.$store.getters["details/hasMainBuilding"];
+    },
+    isLoggedIn() {
+      return this.$store.getters["auth/isLoggedIn"];
     }
   },
   watch: {

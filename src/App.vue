@@ -20,11 +20,8 @@ export default {
 
   // called when App is created
   created() {
-    // if logged in, set the authentication headers of axios to allow authenticated api use
-    // if (this.isLoggedIn) {
-    //   this.$store.commit("auth/initAuthHeader");
-    // }
-    this.$store.dispatch("auth/verifyToken")
+    this.$store.commit("auth/initAuthHeader", this.$http)
+
     // GET request the categories from the server
     this.$http
       .get("/categorys")
@@ -51,14 +48,14 @@ export default {
   },
   watch: {
     // verify the auth token everytime the url route changes
-    $route(to, from) {
-      this.$store.dispatch("auth/verifyToken");
-    }
+    // $route(to, from) {
+    //   this.$store.commit("auth/initAuthHeader", this.$http)
+    // }
   },
   computed: {
     isLoggedIn() {
       return this.$store.getters["auth/isLoggedIn"];
-    },
+    }
   }
 };
 </script>

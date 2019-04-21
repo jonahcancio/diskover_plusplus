@@ -12,7 +12,7 @@ router.register(r'categorys', views.CategoryViewSet)
 router.register(r'locations', views.LocationViewSet)
 router.register(r'admin/locations/images', views.AdminLocationImageViewSet, basename='admin_location_images')
 router.register(r'admin/locations', views.AdminLocationViewSet, basename='admin_locations')
-router.register(r'admin/images', views.ImageViewSet)
+router.register(r'admin/images', views.AdminImageViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

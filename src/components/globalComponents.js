@@ -9,14 +9,16 @@ import SideDrawer from "@/components/ui/SideDrawer"
 import FloatingButton from "@/components/ui/FloatingButton"
 import BottomModal from "@/components/ui/BottomModal"
 import CenterModal from "@/components/ui/CenterModal"
+import AdminDropdown from "@/components/ui/AdminDropdown"
+
 Vue.component("NavBar", NavBar)
 Vue.component("Background", Background)
 Vue.component("InfoCard", InfoCard)
-
 Vue.component("SideDrawer", SideDrawer)
 Vue.component("FloatingButton", FloatingButton)
 Vue.component("BottomModal", BottomModal)
 Vue.component("CenterModal", CenterModal)
+Vue.component("AdminDropdown", AdminDropdown)
 
 //Home Components
 import CategoryCard from "@/components/home/CategoryCard"

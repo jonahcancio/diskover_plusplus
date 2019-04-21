@@ -40,8 +40,8 @@ export default {
             state.invalidLogInAttempt = newInvalid;
         },
         // configure axios headers to for authenticated api use
-        initAuthHeader(state) {
-            axios.defaults.headers.common['Authorization'] = `JWT ${state.jwt}`;
+        initAuthHeader(state, axiosObj) {
+            axiosObj.defaults.headers.common['Authorization'] = `JWT ${state.jwt}`;
         }
     },
     getters: {
@@ -53,15 +53,19 @@ export default {
     actions: {
         // verifies if token is valid and has not expired yet
         // logs user out if invalid or has expired
-        verifyToken({ state, dispatch, commit }) {
-            axios.post('/api-token-verify/', {
-                'token': state.jwt
-            }).then((response) => {
-                console.log("successfully verified token; you remain logged in", response)
-                commit('initAuthHeader')
-            }).catch((error) => {
-                console.log("sorry, token is unverified; logging you out", error)
-                dispatch('logOut')
+        verifyToken({ state, dispatch, commit }, axiosObj) {
+            return new Promise((resolve, reject) => {
+                axios.post('/api-token-verify/', {
+                    'token': state.jwt
+                }).then((response) => {
+                    console.log("Successfully verified token!\n", response)
+                    commit('initAuthHeader', axiosObj)
+                    resolve()
+                }).catch((error) => {
+                    console.log("Invalid token cannot be verified :(\n", error)
+                    dispatch('logOut')
+                    reject()
+                })
             })
         },
         // attempts a login using the username and password supplied in its payload
@@ -69,21 +73,22 @@ export default {
             axios.post(`/api-token-auth/`, {
                 username: username,
                 password: password
-            }).then(response => {
-                console.log("successfully authenticated token: You are now logged in", response)
+            }).then(response => {                
                 commit("setToken", response.data.token)
                 commit("setUser", username)
                 commit("setInvalidLogInAttempt", false)
+                console.log("Successfully authenticated token: You are now logged in\n", response)
             }).catch(error => {
                 console.log(error)
+                console.log("Invalid username and password for authentication, you remain logged out\n", error)
                 commit("setInvalidLogInAttempt", true)
             });
         },
         // performs logout
-        logOut({ commit }) {
-            console.log("successfully deleted token: You are now logged out")
+        logOut({ commit }) {            
             commit("deleteToken");
             commit("deleteUser");
+            console.log("Successfully deleted token: You are now logged out\n")
         },
     }
 }

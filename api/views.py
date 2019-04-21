@@ -18,7 +18,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class LocationPagination(PageNumberPagination):
     page_size = 10
@@ -95,7 +95,7 @@ class LocationViewSet(viewsets.ModelViewSet):
 # Viewset for locations that admin can CRUD
 class AdminLocationViewSet(LocationViewSet):
     queryset = Location.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     pagination_class = None
 
     def get_serializer_class(self):
@@ -334,7 +334,7 @@ def handle_image_deletions(imageUrl):
 
 class AdminLocationImageViewSet(LocationViewSet):
     queryset = Location.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     pagination_class = None
 
     def get_serializer_class(self):
@@ -402,10 +402,10 @@ class AdminLocationImageViewSet(LocationViewSet):
         })
 
 
-class ImageViewSet(viewsets.ModelViewSet):
+class AdminImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def filter_queryset(self, queryset):
         locationId = self.request.query_params.get("location_id")

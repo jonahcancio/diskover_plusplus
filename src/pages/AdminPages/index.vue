@@ -1,11 +1,17 @@
 <template>
   <div>
-    <router-view>YOU ARE UNAUTHENTICATED</router-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  created() {
+    if (this.$route.name == 'admin_blank') {  
+      this.$router.replace({name: '404'})
+    }
+  }
+};
 </script>
 
 <style>

@@ -55,7 +55,7 @@ const router = new VueRouter({
     // form page for admin
     {
       path: "/admin",
-      name: "admin",
+      name: "admin_blank",
       component: AdminPages,
       children: [
         {
@@ -89,9 +89,13 @@ const router = new VueRouter({
           name: "tagtable"
         },
         {
-          path: "*",
+          path: "unauthenticated",
           name: "unauthenticated",
           component: UnauthenticatedPage
+        },
+        {
+          path: "*",
+          component: Error404Page
         }
       ]
     },    
