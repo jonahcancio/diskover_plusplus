@@ -3,12 +3,12 @@
   <v-container>
     <v-layout v-if="!isLoggedIn" class="display-1 pa-5 white-bg" column @keyup.enter="attemptLogIn">
       <div>Log in to your superuser account</div>
-      <v-text-field 
+      <v-text-field
         v-model="username"
         label="Username"
         :error-messages="invalidLogInAttempt? 'username does not match with password' : null"
       />
-      <v-text-field 
+      <v-text-field
         v-model="password"
         type="password"
         label="Password"
@@ -16,7 +16,10 @@
       />
       <v-btn color="primary" @click="attemptLogIn">Log In</v-btn>
     </v-layout>
-    <v-layout v-else class="display-1 pa-5 white-bg" column> 
+    <v-layout v-else class="display-1 pa-5 white-bg" column>
+      <div>Currently logged in as 
+        <span class="primary--text font-weight-bold">{{ loggedInUser }}</span>
+      </div>
       <div>Logout?</div>
       <v-layout>
         <v-btn color="blue" @click="logOut">Yes</v-btn>
@@ -54,10 +57,13 @@ export default {
     },
     invalidLogInAttempt() {
       return this.$store.state.auth.invalidLogInAttempt;
-    } 
+    },
+    loggedInUser() {
+      return this.$store.state.auth.user;
+    }
   },
   destroyed() {
-    this.$store.commit("auth/setInvalidLogInAttempt", false)
+    this.$store.commit("auth/setInvalidLogInAttempt", false);
   }
 };
 </script>

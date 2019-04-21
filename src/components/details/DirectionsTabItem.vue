@@ -7,7 +7,7 @@
       <v-list-tile
         v-for="(inst, index) in instructions"
         :class="bgClass(index)"
-        :key="index"
+        :key="inst.index"
         @click="toggleActivation(index)"
       >
         <v-list-tile-content>

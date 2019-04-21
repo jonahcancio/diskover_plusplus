@@ -51,14 +51,16 @@ Vue.component("Minimap", Minimap)
 import DirectionsTabItem from "@/components/details/DirectionsTabItem"
 import DescriptionTabItem from "@/components/details/DescriptionTabItem"
 import ImagesTabItem from "@/components/details/ImagesTabItem"
-import RoomBuildingTabItem from "@/components/details/RoomBuildingTabItem"
 import NearbyLocationsTabItem from "@/components/details/NearbyLocationsTabItem"
+import SubareaTabItem from "@/components/details/SubareaTabItem"
+import MainBuildingTabItem from "@/components/details/MainBuildingTabItem"
 
 Vue.component("DirectionsTabItem", DirectionsTabItem)
 Vue.component("ImagesTabItem", ImagesTabItem)
 Vue.component("DescriptionTabItem", DescriptionTabItem)
-Vue.component("RoomBuildingTabItem", RoomBuildingTabItem)
 Vue.component("NearbyLocationsTabItem", NearbyLocationsTabItem)
+Vue.component("SubareaTabItem", SubareaTabItem)
+Vue.component("MainBuildingTabItem", MainBuildingTabItem)
 
 //Admin Page Components
 import CategoryDropdown from "@/components/admin/CategoryDropdown"

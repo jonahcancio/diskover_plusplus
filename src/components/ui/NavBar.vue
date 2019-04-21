@@ -7,6 +7,14 @@
       <v-btn to="/" class="white--text" flat>Diskover++</v-btn>
       <!-- Button for displaying GPS configuration modals -->
       <v-btn class="white--text" flat @click="openGpsModal">Configure GPS</v-btn>
+      <v-btn
+        class="white--text"
+        flat
+        :to="{
+          name:'location_crud_form',
+          params: {mode: 'create'}
+        }"
+      >Create new location</v-btn>
 
       <!-- Create new location link -->
       <!-- <v-btn to="/form/create" class="white--text" flat>New Location</v-btn> -->
@@ -61,7 +69,7 @@
               <v-list-tile-title class="white--text">
                 <span
                   v-if="$store.getters['auth/isLoggedIn']"
-                >Logged in as {{ $store.state.auth.user }}</span>
+                >Logged in as {{ loggedInUser }}</span>
                 <span v-else>Anonymous User</span>
               </v-list-tile-title>
             </router-link>
@@ -74,6 +82,11 @@
 
 <script>
 export default {
+  computed: {
+    loggedInUser() {
+      return this.$store.state.auth.user;
+    }
+  },
   methods: {
     // tuck sideDrawer In to show full map
     showFullMap() {

@@ -1,6 +1,6 @@
 <template>
   <!-- selection input with multiple category chips -->
-  <div id="category-select">
+  <div id="tag-select">
     <v-select
       v-model="tagsFilter"
       :items="tags"
@@ -27,7 +27,7 @@ export default {
     // reference active category filters from Vuex store
     tagsFilter: {
       get() {
-        return this.$store.state.admin.locations.tagsFilter;
+        return this.$store.state.search.tagsFilter;
       },
       // set active filters in Vuex store and trigger a change event when chip is selected
       set(value) {
@@ -43,7 +43,7 @@ export default {
 </script>
 
 <style>
-#category-select .v-chip {
+#tag-select .v-chip {
   background-color: var(--v-primary-base) !important;
   color: white;
 }

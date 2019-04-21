@@ -44,13 +44,20 @@ class Location(models.Model):
     def reset_id_sequence(cls):
         reset_value = cls.objects.order_by('pk').last().id + 1
         with connection.cursor() as cursor:
-            cursor.execute("ALTER SEQUENCE location_id_seq RESTART WITH %s", [reset_value])
+            cursor.execute(
+                "ALTER SEQUENCE location_id_seq RESTART WITH %s", [reset_value])
+
 
 class Image(models.Model):
-    """"""
-    location = models.CharField(max_length=100, blank=False)
-    img_url = models.CharField(
-        max_length=260, primary_key=True, unique=True, blank=False)
+    img_url = models.CharField(max_length=260, blank=False)
+    location = models.ManyToManyField(Location, related_name='images')
+
+    @classmethod
+    def reset_id_sequence(cls):
+        reset_value = cls.objects.order_by('pk').last().id + 1
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "ALTER SEQUENCE image_id_seq RESTART WITH %s", [reset_value])
 
     class Meta:
         db_table = 'image'

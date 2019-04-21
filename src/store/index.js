@@ -4,7 +4,7 @@ import details from '@/store/details'
 import search from '@/store/search'
 import map from '@/store/map'
 import auth from '@/store/auth'
-import admin from '@/store/admin/index'
+
 
 // Initialize Vuex Store
 Vue.use(Vuex)
@@ -17,7 +17,6 @@ const store = new Vuex.Store({
     search: search,
     map: map,
     auth: auth,
-    admin: admin
   },
   // base state variables to be used
   state: {
