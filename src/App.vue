@@ -20,31 +20,32 @@ export default {
 
   // called when App is created
   created() {
-    this.$store.commit("auth/initAuthHeader", this.$http)
+    // this.$store.commit("auth/initAuthHeader", this.$http)
+    this.$store.dispatch("auth/verifyToken").finally(() => {
+      // GET request the categories from the server
+      this.$http
+        .get("/categorys")
+        // store categories in the base Vuex store if successful GET
+        .then(response => {
+          this.$store.commit("setCategories", response.data);
+        })
+        //alert error if unsuccessful GET
+        .catch(error => {
+          alert("error retrieving categories from API");
+        });
 
-    // GET request the categories from the server
-    this.$http
-      .get("/categorys")
-      // store categories in the base Vuex store if successful GET
-      .then(response => {
-        this.$store.commit("setCategories", response.data);
-      })
-      //alert error if unsuccessful GET
-      .catch(error => {
-        alert("error retrieving categories from API");
-      });
-
-    // GET request the tags from the server
-    this.$http
-      .get("/tags")
-      // store categories in the base Vuex store if successful GET
-      .then(response => {
-        this.$store.commit("setTags", response.data);
-      })
-      //alert error if unsuccessful GET
-      .catch(error => {
-        alert("error retrieving categories from API");
-      });
+      // GET request the tags from the server
+      this.$http
+        .get("/tags")
+        // store categories in the base Vuex store if successful GET
+        .then(response => {
+          this.$store.commit("setTags", response.data);
+        })
+        //alert error if unsuccessful GET
+        .catch(error => {
+          alert("error retrieving categories from API");
+        });
+    });
   },
   watch: {
     // verify the auth token everytime the url route changes

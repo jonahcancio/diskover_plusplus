@@ -2,7 +2,7 @@ const console = window.console
 
 export default {
   created() {
-    this.$store.dispatch('auth/verifyToken', this.$http)
+    this.$store.dispatch('auth/verifyToken')
       .then(() => {
         console.log("YOU HAVE PROVEN YOURSELF ADMIN. WELL DONE!!")
       })

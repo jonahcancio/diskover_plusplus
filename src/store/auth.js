@@ -40,8 +40,11 @@ export default {
             state.invalidLogInAttempt = newInvalid;
         },
         // configure axios headers to for authenticated api use
-        initAuthHeader(state, axiosObj) {
-            axiosObj.defaults.headers.common['Authorization'] = `JWT ${state.jwt}`;
+        initAuthHeader(state) {
+            axios.defaults.headers.common['Authorization'] = `JWT ${state.jwt}`;
+        },
+        resetAuthHeader(state) {
+            axios.defaults.headers.common['Authorization'] = null
         }
     },
     getters: {
@@ -53,17 +56,18 @@ export default {
     actions: {
         // verifies if token is valid and has not expired yet
         // logs user out if invalid or has expired
-        verifyToken({ state, dispatch, commit }, axiosObj) {
+        verifyToken({ state, dispatch, commit }) {
             return new Promise((resolve, reject) => {
                 axios.post('/api-token-verify/', {
                     'token': state.jwt
                 }).then((response) => {
                     console.log("Successfully verified token!\n", response)
-                    commit('initAuthHeader', axiosObj)
+                    commit('initAuthHeader')
                     resolve()
                 }).catch((error) => {
                     console.log("Invalid token cannot be verified :(\n", error)
                     dispatch('logOut')
+                    commit('resetAuthHeader')
                     reject()
                 })
             })
@@ -76,6 +80,7 @@ export default {
             }).then(response => {                
                 commit("setToken", response.data.token)
                 commit("setUser", username)
+                commit('initAuthHeader')
                 commit("setInvalidLogInAttempt", false)
                 console.log("Successfully authenticated token: You are now logged in\n", response)
             }).catch(error => {
@@ -88,6 +93,7 @@ export default {
         logOut({ commit }) {            
             commit("deleteToken");
             commit("deleteUser");
+            commit('resetAuthHeader')
             console.log("Successfully deleted token: You are now logged out\n")
         },
     }
