@@ -17,10 +17,7 @@
 <script>
 export default {
   name: "App",
-
-  // called when App is created
   created() {
-    // this.$store.commit("auth/initAuthHeader", this.$http)
     this.$store.dispatch("auth/verifyToken").finally(() => {
       // GET request the categories from the server
       this.$http
@@ -31,7 +28,7 @@ export default {
         })
         //alert error if unsuccessful GET
         .catch(error => {
-          alert("error retrieving categories from API");
+          alert("error retrieving categories from API\n", error);
         });
 
       // GET request the tags from the server
@@ -43,7 +40,7 @@ export default {
         })
         //alert error if unsuccessful GET
         .catch(error => {
-          alert("error retrieving categories from API");
+          alert("error retrieving categories from API\n", error);
         });
     });
   },

@@ -20,9 +20,9 @@
     <v-container fluid>
       <!-- White semi-transparent overlay -->
       <v-card class="pull-up" color="rgba(255, 230, 230, 0.7)">
-        <v-card-title>
+        <div class="text-xs-center pt-4">
           <h1 class="display-1">Where would you like to go?</h1>
-        </v-card-title>
+        </div>
         <v-container grid-list-lg fluid>
           <v-layout v-bind="homeLayout" fill-height>
             <!-- Search widget -->
