@@ -25,7 +25,7 @@ import AdminVerifierMixin from "@/mixins/AdminVerifierMixin"
 
 export default {
   mixins: [AdminVerifierMixin],
-  created() {
+  mounted() {
     this.apiGetUnbindedImages();
   },
   data() {
