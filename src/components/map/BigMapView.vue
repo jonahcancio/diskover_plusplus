@@ -115,9 +115,10 @@ export default {
       );
       this.map.setView(this.originCoords, 15);
       for (let i = 0; i < this.resultCoords.length; i++) {
+        let icon = this.getIcon(this.resultIconUrls[i])
         this.addMarker(this.resultCoords[i], {
           draggable: false,
-          icon: this.getIcon(this.resultIconUrls[i])
+          ...icon && {icon: icon}
         });
       }
     },

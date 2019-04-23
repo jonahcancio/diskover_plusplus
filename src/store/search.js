@@ -96,7 +96,7 @@ export default {
 		},
 		resultIconUrls(state) {
 			return state.results.map(
-				result => `${Vue.prototype.$backendStaticPath}images/markers/${result.marker_icon}`
+				result => result.marker_icon? `${Vue.prototype.$backendStaticPath}images/markers/${result.marker_icon}` : null
 			);
 		}
 	}
