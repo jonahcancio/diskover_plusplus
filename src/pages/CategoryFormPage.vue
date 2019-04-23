@@ -55,7 +55,9 @@
 </template>
 
 <script>
+import AdminVerifierMixin from "@/mixins/AdminVerifierMixin"
 export default{
+    mixins: [AdminVerifierMixin],
     data(){
         return{
             name: null,
