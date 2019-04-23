@@ -1,3 +1,5 @@
+import Vue from "@/vuePrototypes"
+
 // Vuex Store module to be used by the Search components
 export default {
 	namespaced: true,
@@ -91,6 +93,11 @@ export default {
 		},
 		resultCoords(state) {
 			return state.results.map(result => [result.lat, result.lng])
+		},
+		resultIconUrls(state) {
+			return state.results.map(
+				result => `${Vue.prototype.$backendStaticPath}images/markers/${result.marker_icon}`
+			);
 		}
 	}
 }

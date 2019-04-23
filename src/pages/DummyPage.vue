@@ -1,15 +1,29 @@
 <template>
   <!-- Used to handle Web page requests that do not exist -->
   <v-container class="yellow lighten-3">
-    <v-layout class="display-1 pt-4" column></v-layout>
+    <v-layout class="display-1 pt-4" column>
+      <div id="map" :style="{height: height}"></div>
+    </v-layout>
   </v-container>
 </template>
 
 
 <script>
+import MapMixin from "@/mixins/MapMixin";
 export default {
+  mixins: [MapMixin],
   created() {
-    this.getUpdateData(this.locationId)
+    this.getUpdateData(this.locationId);
+  },
+  mounted() {
+    this.addMarker(
+      this.$defaultStartCoords,
+      {
+        draggable: true,
+        icon: this.getIcon("http://localhost:8000/static/images/markers/toileticon.png")
+      },
+      "You are here. Drag me all you like."
+    );
   },
   computed: {
     locationId() {

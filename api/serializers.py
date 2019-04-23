@@ -130,15 +130,19 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
 
 class LocationListSerializer(serializers.ModelSerializer):
     thumbnail_url = serializers.SerializerMethodField()
+    marker_icon = serializers.SerializerMethodField()
 
     def get_thumbnail_url(self, obj):
         queryset = Image.objects.filter(location=obj).first()
         serializer = ImageSerializer(instance=queryset)
         return serializer.data["img_url"]
 
+    def get_marker_icon(self, obj):
+        return obj.category.marker
+
     class Meta:
         model = Location
-        fields = ('id', 'name', 'description', 'lat', 'lng', 'thumbnail_url')
+        fields = ('id', 'name', 'description', 'lat', 'lng', 'thumbnail_url', 'marker_icon')
 
 
 class LocationSimpleSerializer(serializers.ModelSerializer):

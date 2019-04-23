@@ -69,6 +69,9 @@ export default {
     },
     resultCoords() {
       return this.$store.getters["search/resultCoords"];
+    },
+    resultIconUrls(state) {
+      return this.$store.getters["search/resultIconUrls"];
     }
   },
   watch: {
@@ -111,8 +114,11 @@ export default {
         "You are here. Drag me all you like."
       );
       this.map.setView(this.originCoords, 15);
-      for (let coord of this.resultCoords) {
-        this.addMarker(coord);
+      for (let i = 0; i < this.resultCoords.length; i++) {
+        this.addMarker(this.resultCoords[i], {
+          draggable: false,
+          icon: this.getIcon(this.resultIconUrls[i])
+        });
       }
     },
     initDetailsPageMap() {

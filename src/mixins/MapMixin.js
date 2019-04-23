@@ -38,14 +38,7 @@ export default {
     // initialize map
     this.initMap()
     // initilize originIcon
-    this.originIcon = L.icon({
-      iconUrl: require("@/assets/markers/originIcon.png"),
-      shadowUrl: require("@/assets/markers/shadow.png"),
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    })
+    this.originIcon = this.getIcon(require("@/assets/markers/originIcon.png"))
   },
   methods: {
     // initializes map on element with id mapId and configure the parameters (references and tokens) used
@@ -129,6 +122,16 @@ export default {
     // rezoom map to fit all markers
     fitAllMapView() {
       this.map.fitBounds(this.markerGroup.getBounds());
+    },
+    getIcon(iconUrl) {
+      return L.icon({
+        iconUrl: iconUrl,
+        shadowUrl: require("@/assets/markers/shadow.png"),
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      })
     }
   }
 }
