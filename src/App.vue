@@ -46,9 +46,9 @@ export default {
   },
   watch: {
     // verify the auth token everytime the url route changes
-    // $route(to, from) {
-    //   this.$store.commit("auth/initAuthHeader", this.$http)
-    // }
+    $route(to, from) {
+      //  this.$store.dispatch("auth/verifyToken")
+    }
   },
   computed: {
     isLoggedIn() {

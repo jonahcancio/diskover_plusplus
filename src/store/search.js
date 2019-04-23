@@ -1,3 +1,5 @@
+import Vue from "@/vuePrototypes"
+
 // Vuex Store module to be used by the Search components
 export default {
 	namespaced: true,
@@ -88,6 +90,17 @@ export default {
 				queryObject["page"] = state.pageNumber
 			}
 			return queryObject
+		},
+		resultIds(state) {
+			return state.results.map(result => result.id)
+		},
+		resultCoords(state) {
+			return state.results.map(result => [result.lat, result.lng])
+		},
+		fullIconUrls(state) {
+			return state.results.map(
+				result => result.marker_icon? `${Vue.prototype.$backendStaticPath}images/markers/${result.marker_icon}` : null
+			);
 		}
 	}
 }

@@ -38,14 +38,7 @@ export default {
     // initialize map
     this.initMap()
     // initilize originIcon
-    this.originIcon = L.icon({
-      iconUrl: require("@/assets/markers/originIcon.png"),
-      shadowUrl: require("@/assets/markers/shadow.png"),
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41]
-    })
+    this.originIcon = this.getIcon(require("@/assets/markers/originIcon.png"))
   },
   methods: {
     // initializes map on element with id mapId and configure the parameters (references and tokens) used
@@ -59,10 +52,10 @@ export default {
       // add tilelayer with valid accessToken that must be acquired from https://account.mapbox.com/access-tokens/
       L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>, ' +
-        'Routing license &copy; <a href="https://opendatacommons.org/licenses/odbl/">ODbL</a>, ' +
-        'Routing source &copy; <a href="http://project-osrm.org/">OSRM</a>',
+          '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+          'Imagery &copy; <a href="https://www.mapbox.com/">Mapbox</a>, ' +
+          'Routing license &copy; <a href="https://opendatacommons.org/licenses/odbl/">ODbL</a>, ' +
+          'Routing source &copy; <a href="http://project-osrm.org/">OSRM</a>',
         zoom: 16,
         id: 'mapbox.streets',
         accessToken: 'pk.eyJ1IjoiZGlza292ZXJwbHVzcGx1cyIsImEiOiJjanRucm1kaHQwMGZqNGFtcjNkbWwyODl3In0.AQ4D4e0LYZRUNHj6t4NPhw'
@@ -95,11 +88,13 @@ export default {
     addMarker(coords, options, popupText) {
       if (this.markerGroup) {
         let m = L.marker(coords, options).addTo(this.markerGroup)
-        if(popupText) {
+        if (popupText) {
           m.bindPopup(popupText).openPopup()
         }
+        return m
       } else {
         console.log("error: markerGroup not initialized yet")
+        return null
       }
     },
     // remove all markers on map
@@ -129,6 +124,16 @@ export default {
     // rezoom map to fit all markers
     fitAllMapView() {
       this.map.fitBounds(this.markerGroup.getBounds());
+    },
+    getIcon(iconUrl) {
+      return iconUrl ? L.icon({
+        iconUrl: iconUrl,
+        shadowUrl: require("@/assets/markers/shadow.png"),
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      }) : null
     }
   }
 }

@@ -58,18 +58,26 @@ export default {
         // verifies if token is valid and has not expired yet
         // logs user out if invalid or has expired
         verifyToken({ state, dispatch, commit }) {
-            commit('initAuthHeader')
-            return new Promise((resolve, reject) => {
-                axios.post('/api-token-verify/', {
-                    'token': state.jwt
-                }).then((response) => {
-                    console.log("Successfully verified token!\n", response)                    
-                    resolve()
-                }).catch((error) => {
-                    console.log("Invalid token cannot be verified :(\n", error)
-                    dispatch('logOut')
-                    reject()
+            if(state.jwt) {
+                commit('initAuthHeader')
+                return new Promise((resolve, reject) => {
+                    axios.post('/api-token-verify/', {
+                        'token': state.jwt
+                    }).then((response) => {
+                        console.log("Successfully verified token!\n", response)     
+                        commit('initAuthHeader')               
+                        resolve()
+                    }).catch((error) => {
+                        console.log("Invalid token cannot be verified :(\n", error)
+                        dispatch('logOut')
+                        reject()
+                    })
                 })
+            }
+            commit('resetAuthHeader')          
+            return new Promise((resolve, reject) => {
+                console.log("you have no token to verify")
+                reject()
             })
         },
         // attempts a login using the username and password supplied in its payload

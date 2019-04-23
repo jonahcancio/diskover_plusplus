@@ -230,6 +230,10 @@ export default {
             this.$store.commit("details/setCategory", response.data.category);
             this.$store.commit("details/setTags", response.data.tags);
             this.$store.commit(
+              "details/setMarkerIcon",
+              response.data.marker_icon
+            );
+            this.$store.commit(
               "details/setDescription",
               response.data.description
             );
