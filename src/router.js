@@ -117,7 +117,7 @@ const router = new VueRouter({
     },
     //category form page
     {
-      path: "/categoryform",
+      path: "/categoryform/:mode/:id?",
       name: "categoryform",
       component: CategoryFormPage,
     },

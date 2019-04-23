@@ -21,6 +21,7 @@
         <v-card-actions>
             <v-btn class="primary white--text" v-on:click="onSubmitClick">Submit</v-btn>
             <v-btn v-if="mode != 'create'" class="primary white--text" v-on:click="onDeleteClick">Delete</v-btn>
+            <v-btn class="green white--text" @click="onCancelClick">Cancel</v-btn>
         </v-card-actions>
         </v-container>
     </v-card>
@@ -82,6 +83,9 @@ export default{
                 console.log("Failed to delete tag")
                 console.log(error)
             })
+        },
+        onCancelClick(){
+            this.$router.push(`/admin/browse/tags`)
         },
         handlePush(){
             console.log(`You are editing tag ${this.id}`)

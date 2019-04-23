@@ -12,8 +12,8 @@
                 <v-icon :color="category.item.routeColor">navigation</v-icon>
             </td>
             <td class="justify-center">
-                <v-icon small class="mr-2" @click="onClickEdit(tag.item.id, $event)">edit</v-icon>
-                <v-icon small class="mr-2" @click="onClickDelete(tag.item.id,$event)">delete</v-icon>
+                <v-icon small class="mr-2" @click="$emit('edit-item',category.item.id)">edit</v-icon>
+                <v-icon small class="mr-2" @click="$emit('delete-item',category.item.id)">delete</v-icon>
             </td>
         </template>
     </v-data-table>

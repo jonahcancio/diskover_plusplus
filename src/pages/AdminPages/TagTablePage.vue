@@ -30,7 +30,6 @@ export default{
         this.getTags()
     },
     methods:{
-        // reference the category names from the Vuex store
         getTags() {
             this.$http.get('/tags/')
             .then(response =>{
