@@ -88,6 +88,9 @@ export default {
 				queryObject["page"] = state.pageNumber
 			}
 			return queryObject
+		},
+		resultCoords(state) {
+			return state.results.map(result => [result.lat, result.lng])
 		}
 	}
 }
