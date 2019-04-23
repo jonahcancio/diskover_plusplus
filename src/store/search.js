@@ -91,10 +91,13 @@ export default {
 			}
 			return queryObject
 		},
+		resultIds(state) {
+			return state.results.map(result => result.id)
+		},
 		resultCoords(state) {
 			return state.results.map(result => [result.lat, result.lng])
 		},
-		resultIconUrls(state) {
+		fullIconUrls(state) {
 			return state.results.map(
 				result => result.marker_icon? `${Vue.prototype.$backendStaticPath}images/markers/${result.marker_icon}` : null
 			);

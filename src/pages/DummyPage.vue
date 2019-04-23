@@ -20,10 +20,12 @@ export default {
       this.$defaultStartCoords,
       {
         draggable: true,
-        icon: this.getIcon("http://localhost:8000/static/images/markers/toileticon.png")
+        icon: this.getIcon("http://localhost:8000/static/images/markers/toileticon.png"),
       },
       "You are here. Drag me all you like."
-    );
+    ).on("click", () => {
+      console.log("CLICKCK")
+    });
   },
   computed: {
     locationId() {

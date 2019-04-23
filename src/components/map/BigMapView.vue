@@ -40,7 +40,8 @@ export default {
       // stores  the button control for resetting map zoom to GPS location
       gpsButton: null,
       // stores object used for controlling the map routings
-      routing: null
+      routing: null,
+      endIcon: null
     };
   },
   computed: {
@@ -67,11 +68,17 @@ export default {
         this.$store.commit("map/setOriginCoords", value);
       }
     },
+    resultIds() {
+      return this.$store.getters["search/resultIds"];
+    },
     resultCoords() {
       return this.$store.getters["search/resultCoords"];
     },
-    resultIconUrls(state) {
-      return this.$store.getters["search/resultIconUrls"];
+    fullIconUrls(state) {
+      return this.$store.getters["search/fullIconUrls"];
+    },
+    detailIconUrl(state) {
+      return this.$store.getters["details/fullIconUrl"];
     }
   },
   watch: {
@@ -105,6 +112,7 @@ export default {
       }
       this.removeAllCircles();
       this.removeAllMarkers();
+      // add origin marker
       this.addMarker(
         this.originCoords,
         {
@@ -114,11 +122,17 @@ export default {
         "You are here. Drag me all you like."
       );
       this.map.setView(this.originCoords, 15);
+      // add result markers
       for (let i = 0; i < this.resultCoords.length; i++) {
-        let icon = this.getIcon(this.resultIconUrls[i])
+        let icon = this.getIcon(this.fullIconUrls[i]);
         this.addMarker(this.resultCoords[i], {
           draggable: false,
-          ...icon && {icon: icon}
+          ...(icon && { icon: icon })
+        }).on("click", () => {
+          this.$router.push({
+            name: "details",
+            params: { id: this.resultIds[i] }
+          });
         });
       }
     },
@@ -162,8 +176,10 @@ export default {
                 .bindPopup("You are here. Drag me all you like")
                 .openPopup();
             } else {
+              let icon = this.getIcon(this.detailIconUrl);
               return L.marker(waypoint.latLng, {
-                draggable: false
+                draggable: false,
+                ...(icon && { icon: icon })
               })
                 .bindPopup("You want to go here")
                 .openPopup();

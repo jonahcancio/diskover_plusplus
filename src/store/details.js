@@ -24,6 +24,8 @@ export default {
 		nearbyLocations: [],
 		// the image urls of the location in focus
 		imageUrls: [],
+		// stores the marker_icon of location
+		markerIcon: "",
 	},
 	mutations: {
 		// set category
@@ -65,6 +67,9 @@ export default {
 		// set mainBuilding of location
 		setMainBuilding(state, newMainBuilding) {
 			state.mainBuilding = newMainBuilding
+		},
+		setMarkerIcon(state, newMarkerIcon) {
+			state.markerIcon = newMarkerIcon
 		}
 	},
 	getters: {
@@ -73,6 +78,9 @@ export default {
 			return state.imageUrls.map(
 				url => `${Vue.prototype.$backendStaticPath}images/locations/${url}`
 			);
+		},
+		fullIconUrl(state) {
+			return state.markerIcon? `${Vue.prototype.$backendStaticPath}images/markers/${state.markerIcon}` : null
 		},
 		// returns wheter the current location HAS an main building
 		hasMainBuilding(state) {

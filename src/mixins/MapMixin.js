@@ -91,8 +91,10 @@ export default {
         if (popupText) {
           m.bindPopup(popupText).openPopup()
         }
+        return m
       } else {
         console.log("error: markerGroup not initialized yet")
+        return null
       }
     },
     // remove all markers on map
