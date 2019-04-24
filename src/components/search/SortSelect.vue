@@ -30,6 +30,7 @@ export default {
       },
       set(value) {
         this.$store.commit("search/setOrderingFilter", value);
+        this.$store.commit("search/setPageNumber", 1);  
         this.$router.push({
           name: "search",
           query: this.apiQuery

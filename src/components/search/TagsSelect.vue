@@ -32,6 +32,7 @@ export default {
       // set active filters in Vuex store and trigger a change event when chip is selected
       set(value) {
         this.$store.commit("search/setTagsFilter", value);
+        this.$store.commit("search/setPageNumber", 1);  
         this.$router.push({
           name: "search",
           query: this.apiQuery
