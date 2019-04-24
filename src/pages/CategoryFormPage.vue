@@ -31,7 +31,7 @@
                 <label>Route Color</label>
                 <div>Pick a color:<input type="color" v-model="color" @change="onColorSelected"></div>
             </v-flex>
-            <v-flex xs12>
+            <!-- <v-flex xs12>
                 <label>Image</label>
                 <div><input type="file" @change="onImageFileSelected"></div>
             </v-flex>
@@ -42,7 +42,7 @@
             <v-flex xs12>
                 <label>Route Marker</label>
                 <div><input type="file" @change="onImageFileSelected"></div>
-            </v-flex>
+            </v-flex> -->
         </v-layout>
         <v-card-actions>
             <v-btn class="primary white--text" @click="onSubmitClick">Submit</v-btn>

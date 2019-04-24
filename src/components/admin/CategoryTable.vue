@@ -9,7 +9,7 @@
             <td>{{category.item.name}}</td>
             <td>{{category.item.url}}</td>
             <td>
-                <v-icon :color="category.item.routeColor">navigation</v-icon>
+                <v-icon :color="category.item.routeColor">location_on</v-icon>
             </td>
             <td class="justify-center">
                 <v-icon small class="mr-2" @click="$emit('edit-item',category.item.id)">edit</v-icon>
