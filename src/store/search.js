@@ -68,6 +68,7 @@ export default {
 			state.orderingFilter = ""
 			state.categoryFilter = ""
 			state.searchFilter = ""
+			state.pageNumber = 1
 		}
 	},
 	getters: {
