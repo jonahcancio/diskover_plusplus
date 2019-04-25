@@ -45,8 +45,8 @@
             </v-flex> -->
         </v-layout>
         <v-card-actions>
-            <v-btn class="primary white--text" @click="onSubmitClick">Submit</v-btn>
-            <v-btn v-if="mode != 'create'" class="primary white--text" v-on:click="onDeleteClick">Delete</v-btn>
+            <v-btn class="primary white--text" @click="onSubmitClick" :disabled="isSubmitting">Submit</v-btn>
+            <v-btn v-if="mode != 'create'" class="primary white--text" v-on:click="onDeleteClick" :disabled="isSubmitting">Delete</v-btn>
             <v-btn class="green white--text" @click="onCancelClick">Cancel</v-btn>
         </v-card-actions>
         </v-container>
@@ -62,7 +62,8 @@ export default{
         return{
             name: null,
             url: null,
-            color: null
+            color: null,
+            isSubmitting: false
         }
     },
     computed:{
@@ -93,7 +94,7 @@ export default{
                 this.color = routeColor;
                 console.log(this.color)
             })
-            .else(error => {
+            .catch(error => {
                 console.log(`Failed to get category ${id}`);
                 console.log(error);
             })
@@ -106,6 +107,7 @@ export default{
             }
         },
         onDeleteClick(){
+            this.isSubmitting = true
             this.$http.delete(`/categorys/${this.id}/`)
             .then(response => {
                 console.log('Successfully deleted category')
@@ -113,15 +115,19 @@ export default{
                 this.name = null;
                 this.$router.push(`/categoryform/create/`);
             })
-            .else(error => {
-                console.log("Failed to delete category")
+            .catch(error => {
+                alert("Failed to delete category")
                 console.log(error)
+            })
+            .finally( () => {
+                this.isSubmitting = false
             })
         },
         onCancelClick(){
             this.$router.push(`/admin/browse/categories`)
         },
         handlePush(){
+            this.isSubmitting = true
             console.log(`You are editing category ${this.id}`)
             this.$http.patch(`/categorys/${this.id}/`,{
                 name: this.name,
@@ -132,11 +138,15 @@ export default{
                 console.log(response)
                 this.$router.push(`/admin/browse/categories`)
             })
-            .else(error => {
-                console.log(error)
+            .catch(error => {
+                alert(error)
+            })
+            .finally(() => {
+                this.isSubmitting = false
             })
         },
         handlePost(){
+            this.isSubmitting = true
             this.$http.post('/categorys/',{
                 name: this.name,
                 url: this.url,
@@ -146,8 +156,11 @@ export default{
                 console.log(response)
                 this.$router.push(`/admin/browse/categories`)
             })
-            .else(error => {
-                console.log(error)
+            .catch(error => {
+                alert.log(error)
+            })
+            .finally(() => {
+                this.isSubmitting = false
             })
         },
         onImageFileSelected(event){

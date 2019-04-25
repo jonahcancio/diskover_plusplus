@@ -14,7 +14,7 @@
         <div class="title">Upload unbinded images</div>
         <input type="file" ref="imageFiles" multiple @input="handleImageUploads">
       </v-flex>
-      <v-btn color="success" @click="handleUploadClick()">Upload unbinded images</v-btn>
+      <v-btn color="success" @click="handleUploadClick()" :disabled="isSubmitting">Upload unbinded images</v-btn>
       <v-btn @click="handleCancelClick()">Cancel</v-btn>
     </v-layout>
   </v-container>
@@ -31,7 +31,8 @@ export default {
   data() {
     return {
       uploadedImageFiles: [],
-      unbindedImages: []
+      unbindedImages: [],
+      isSubmitting: false
     };
   },
   methods: {
@@ -67,6 +68,7 @@ export default {
       }
     },
     handleUploadClick() {
+      this.isSubmitting = true
       let formData = new FormData();
       for (let imageFile of this.uploadedImageFiles) {
         formData.append("images", imageFile);
@@ -83,7 +85,10 @@ export default {
           this.$router.go();
         })
         .catch(function(error) {
-          console.log("error patching updated location to API", error);
+          alert("error patching updated location to API", error);
+        })
+        .finally(() => {
+          this.isSubmitting = false
         });
     },
     handleCancelClick() {

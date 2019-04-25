@@ -19,8 +19,8 @@
             </v-flex>
         </v-layout>
         <v-card-actions>
-            <v-btn class="primary white--text" v-on:click="onSubmitClick">Submit</v-btn>
-            <v-btn v-if="mode != 'create'" class="primary white--text" v-on:click="onDeleteClick">Delete</v-btn>
+            <v-btn class="primary white--text" v-on:click="onSubmitClick" :disabled="isSubmitting">Submit</v-btn>
+            <v-btn v-if="mode != 'create'" class="primary white--text" v-on:click="onDeleteClick" :disabled="isSubmitting">Delete</v-btn>
             <v-btn class="green white--text" @click="onCancelClick">Cancel</v-btn>
         </v-card-actions>
         </v-container>
@@ -35,6 +35,7 @@ export default{
     data(){
         return{
             name: null,
+            isSubmitting: false
         }
     },
     computed:{
@@ -61,7 +62,7 @@ export default{
                 let {name} = response.data;
                 this.name = name;
             })
-            .else(error => {
+            .catch(error => {
                 console.log(`Failed to get tag ${id}`);
                 console.log(error);
             })
@@ -74,6 +75,7 @@ export default{
             }
         },
         onDeleteClick(){
+            this.isSubmitting = true
             this.$http.delete(`/tags/${this.id}/`)
             .then(response => {
                 console.log('Successfully deleted tag')
@@ -81,15 +83,19 @@ export default{
                 this.name = null;
                 this.$router.push(`/tagform/create/`);
             })
-            .else(error => {
-                console.log("Failed to delete tag")
+            .catch(error => {
+                alert("Failed to delete tag")
                 console.log(error)
+            })
+            .finally(() => {
+                this.isSubmitting = false
             })
         },
         onCancelClick(){
             this.$router.push(`/admin/browse/tags`)
         },
         handlePush(){
+            this.isSubmitting = true
             console.log(`You are editing tag ${this.id}`)
             this.$http.patch(`/tags/${this.id}/`,{
                 name: this.name
@@ -97,11 +103,15 @@ export default{
             .then(response => {
                 console.log(response)
             })
-            .else(error => {
+            .catch(error => {
                 console.log(error)
+            })
+            .finally(() => {
+                this.isSubmitting = false
             })
         },
         handlePost(){
+            this.isSubmitting = true
             this.$http.post('/tags/',{
                 name: this.name
             })
@@ -109,8 +119,11 @@ export default{
                 console.log(response);
                 this.$router.push(`/admin/browse/tags`);
             })
-            .else(error => {
-                console.log(error)
+            .catch(error => {
+                alert(error)
+            })
+            .finally(() => {
+                this.isSubmitting = false
             })
         }
     }

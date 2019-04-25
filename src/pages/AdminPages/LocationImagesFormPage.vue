@@ -51,7 +51,7 @@
         <div class="title">Upload images</div>
         <input type="file" ref="imageFiles" multiple @input="handleImageUploads">
       </v-flex>
-      <v-btn color="success" @click="handleUpdateClick()">Update location images</v-btn>
+      <v-btn color="success" @click="handleUpdateClick()" :disabled="isSubmitting">Update location images</v-btn>
       <v-btn @click="handleCancelClick()">Cancel</v-btn>
     </v-layout>
   </v-container>
@@ -76,7 +76,8 @@ export default {
       locationSearchQuery: "",
       locationSearchImages: [],
       selectedSearchImages: [],
-      uploadedImageFiles: []
+      uploadedImageFiles: [],
+      isSubmitting: false
     };
   },
   computed: {
@@ -188,6 +189,7 @@ export default {
       }
     },
     handleUpdateClick() {
+      this.isSubmitting = true
       let formData = new FormData();
       for (let imageId of this.updatedImageIds) {
         formData.append("image_ids", imageId);
@@ -207,7 +209,10 @@ export default {
           this.$router.push({name: 'details', params: {id: this.locationId}});
         })
         .catch(function(error) {
-          console.log("error patching updated location to API", error);
+          alert("error patching updated location to API", error);
+        })
+        .finally(() => {
+          this.isSubmitting = false
         });      
     },
     handleCancelClick() {

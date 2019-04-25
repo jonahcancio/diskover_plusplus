@@ -32,7 +32,7 @@
           </div>
         </v-radio-group>
       </v-flex>
-      <v-btn color="error" @click="handleDeleteClick()">Delete Image</v-btn>
+      <v-btn color="error" @click="handleDeleteClick()" :disabled="isSubmitting">Delete Image</v-btn>
       <v-btn @click="handleCancelClick()">Cancel</v-btn>
     </v-layout>
     <CenterModal :isVisible="isDeleteConfirmVisible" @close="isDeleteConfirmVisible=false">
@@ -65,7 +65,8 @@ export default {
       locationSearchItems: [],
       locationSearchImages: [],
       selectedDeleteImageId: "",
-      isDeleteConfirmVisible: false
+      isDeleteConfirmVisible: false,
+      isSubmitting: false
     };
   },
   computed: {
@@ -145,6 +146,7 @@ export default {
       this.isDeleteConfirmVisible = true;
     },
     handleDeleteConfirm() {
+      this.isSubmitting = true
       this.$http
         .delete(`/admin/images/${this.selectedDeleteImageId}/`)
         .then(response => {
@@ -152,7 +154,10 @@ export default {
           this.$router.go();
         })
         .catch(function(error) {
-          console.log("error deleting location to API", error);
+          alert("error deleting location to API", error);
+        })
+        .finally(() => {
+          this.isSubmitting = false
         });
     },
     handleCancelClick() {

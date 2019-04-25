@@ -107,9 +107,9 @@
           />
         </div>
       </v-flex>
-      <v-btn v-if="mode=='create'" color="success" @click="handleCreateClick()">Create Location</v-btn>
-      <v-btn v-else-if="mode=='update'" color="success" @click="handleUpdateClick()">Update Location</v-btn>
-      <v-btn v-else color="error" @click="handleDeleteClick()">Delete Location</v-btn>
+      <v-btn v-if="mode=='create'" color="success" @click="handleCreateClick()" :disabled="isSubmitting">Create Location</v-btn>
+      <v-btn v-else-if="mode=='update'" color="success" @click="handleUpdateClick()" :disabled="isSubmitting">Update Location</v-btn>
+      <v-btn v-else color="error" @click="handleDeleteClick()" :disabled="isSubmitting">Delete Location</v-btn>
       <v-btn @click="handleCancelClick()">Cancel</v-btn>
     </v-layout>
   </v-container>
@@ -135,9 +135,10 @@ export default {
       subareaIds: [],
       subareaSearch: "",
       subareaItems: [],
-      mainBuildingId: -1,
+      mainBuildingId: 0,
       mainBuildingSearch: "",
-      mainBuildingItems: []
+      mainBuildingItems: [],
+      isSubmitting: false
     };
   },
   computed: {
@@ -280,6 +281,7 @@ export default {
       this.$router.go(-1);
     },
     handleDeleteClick() {
+      this.isSubmitting = true
       this.$http
         .delete(`/admin/locations/${this.id}/`)
         .then(response => {
@@ -287,10 +289,14 @@ export default {
           this.$router.push(`/map/search`);
         })
         .catch(function(error) {
-          console.log("error deleting location to API", error);
-        });
+          alert("error deleting location to API", error);
+        })
+        .finally(() => {
+          this.isSubmitting = false
+        });;
     },
     handleCreateClick() {
+      this.isSubmitting = true
       this.$http
         .post(`/admin/locations/`, {
           name: this.name,
@@ -307,7 +313,10 @@ export default {
           this.$router.push(`/map/details/${response.data.id}`);
         })
         .catch(function(error) {
-          console.log("error posting new location to API", error);
+          alert("error posting new location to API", error);
+        })
+        .finally(() => {
+          this.isSubmitting = false
         });
     },
     handleUpdateClick() {
@@ -327,8 +336,11 @@ export default {
           this.$router.push(`/map/details/${this.id}`);
         })
         .catch(function(error) {
-          console.log("error patching updated location to API", error);
-        });
+          alert("error patching updated location to API", error);
+        })
+        .finally(() => {
+          this.isSubmitting = false
+        });;
     }
   }
 };

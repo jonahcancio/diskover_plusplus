@@ -75,7 +75,7 @@ class LocationRetrieveSerializer(serializers.ModelSerializer):
     img_urls = serializers.SerializerMethodField()
 
     def get_marker_icon(self, obj):
-        return obj.category.marker
+        return obj.category and obj.category.marker
 
     def get_subareas(self, obj):
         subareaDict = {}
@@ -142,7 +142,7 @@ class LocationListSerializer(serializers.ModelSerializer):
         return serializer.data["img_url"]
 
     def get_marker_icon(self, obj):
-        return obj.category.marker
+        return obj.category and obj.category.marker
 
     class Meta:
         model = Location
