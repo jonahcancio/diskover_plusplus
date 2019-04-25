@@ -184,7 +184,6 @@ class AdminLocationViewSet(LocationViewSet):
 
         # add building or subareas if there are any
         if 'main_building' in requestDict and requestDict['main_building']:
-            print("main building" + requestDict['main_building'])
             Subarea.objects.update_or_create(sub=createdLocation, defaults={
                 'building': Location.objects.get(pk=requestDict['main_building'])
             })
