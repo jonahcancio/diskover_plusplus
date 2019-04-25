@@ -56,6 +56,19 @@
                     </v-card>
                 </v-expansion-panel-content>
             </v-expansion-panel>
+            <v-card color="primary">
+                <v-card-title>
+                    <h2 class="white--text">
+                        Other Helpful Sites
+                    </h2>
+                </v-card-title>
+                <v-card-text class="white--text">
+                    <ul>
+                        <li><a href="http://sakay.ph" class="white--text">Sakay.ph</a></li>
+                        <li>UPD Mobile - <a href="https://itunes.apple.com/ph/app/upd-mobile/id1443763130?mt=8" class="white--text">iOS</a> or <a href="https://play.google.com/store/apps/details?id=com.upmobile" class="white--text">Android</a></li>
+                    </ul>                    
+                </v-card-text>
+            </v-card>
         </v-layout>
     </v-container>
 
