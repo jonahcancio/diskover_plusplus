@@ -13,10 +13,11 @@
 
 <script>
 import MapMixin from "@/mixins/MapMixin";
+import JeepMixin from "@/mixins/JeepMixin";
 
 export default {
   // import the map mixin for automatic map initialization on #map
-  mixins: [MapMixin],
+  mixins: [MapMixin, JeepMixin],
   // called after MapMixin's mounted method
   mounted() {
     // initialize GPS reset button on map
