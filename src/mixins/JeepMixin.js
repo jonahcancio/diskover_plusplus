@@ -49,7 +49,7 @@ export default {
     initJeepRoutesControl() {
       let overlays = {};
       for (let jeep of this.jeepList) {
-        overlays[jeep.name] = jeep.layer
+        overlays[jeep.name + " Route - Color: " + jeep.color] = jeep.layer
       }
       let control = L.control.layers({}, overlays,
         {
