@@ -4,7 +4,7 @@
     <v-card color="secondary">
       <v-container grid-list-lg>
         <v-layout row wrap justify-start align-content-start>
-          <v-flex v-for="(url, i) in imageUrls" :key="url" xs4>
+          <v-flex v-for="(url, i) in fullImageUrls" :key="url" xs4>
             <v-hover>
               <!-- toggle image card to openCarouselModal on click -->
               <v-card
@@ -20,7 +20,7 @@
         </v-layout>
       </v-container>
       <v-card-text>
-        <div v-if="!imageUrls || !imageUrls.length" class="body-2">No images found for this location</div> 
+        <div v-if="!fullImageUrls || !fullImageUrls.length" class="body-2">No images found for this location</div> 
         <div v-else class="body-2">Click an image for a bigger view</div>
       </v-card-text>
     </v-card>
@@ -28,7 +28,7 @@
     <CenterModal width="550px" :isVisible="isCarouselVisible" @close="setCarouselModal(false)">
       <v-card>
         <v-carousel :cycle="false" v-model="carouselIndex">
-          <v-carousel-item v-for="(url, i) in imageUrls" :key="i">
+          <v-carousel-item v-for="(url, i) in fullImageUrls" :key="i">
             <v-img :src="url" height="100%" position="center top"></v-img>
           </v-carousel-item>
         </v-carousel>
@@ -39,6 +39,11 @@
 
 <script>
 export default {
+  props: {
+    imageUrls: {
+      default: []
+    }
+  },
   data() {
     return {
       // controls visibility of carousel modal
@@ -49,8 +54,10 @@ export default {
   },
   computed: {
     // references the image urls from the Vuex store
-    imageUrls() {
-      return this.$store.getters["details/fullImageUrls"];
+    fullImageUrls() {
+      return this.imageUrls.map(
+				url => `${this.$backendStaticPath}images/locations/${url}`
+			)
     }
   },
   methods: {
