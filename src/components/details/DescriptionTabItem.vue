@@ -9,11 +9,12 @@
 
 <script>
 export default {
-  computed: {
-    description() {
-      return this.$store.state.details.description;
+  props: {
+    description: {
+      type: String,
+      default: "No description found."
     }
-  }
+  },
 };
 </script>
 

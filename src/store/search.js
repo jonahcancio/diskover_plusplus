@@ -11,11 +11,8 @@ export default {
 		categoryFilter: "",
 		tagsFilter: [],
 		orderingFilter: "",
-		// the current page number at the results page
 		pageNumber: 1,
-		// the total number of pages needed for results
 		maxPages: 4,
-		// the total number of results found
 		totalResultCount: 0
 	},
 	mutations: {

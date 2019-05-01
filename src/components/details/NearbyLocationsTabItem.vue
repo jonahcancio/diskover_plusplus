@@ -24,12 +24,11 @@
 
 <script>
 export default {
-  computed: {
-    // reference nearbyLocations from the Vuex store
-    nearbyLocations() {
-      return this.$store.state.details.nearbyLocations;
+  props: {
+    nearbyLocations: {
+      default: []
     }
-  }
+  },
 };
 </script>
 

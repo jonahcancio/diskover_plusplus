@@ -7,7 +7,7 @@
         <v-layout fill-height align-end justify-center>
           <v-flex>
             <v-card-title primary-title class="d-block semi-dark-bg">
-              <div class="headline white--text text-xs-center">{{ locationObj.name }}</div>
+              <div class="headline white--text text-xs-center">{{ locationName }}</div>
             </v-card-title>
           </v-flex>
         </v-layout>
@@ -16,9 +16,7 @@
     <!-- Category indicator and link -->
     <v-flex class="mt-2 title text-xs-center">
       Category:
-      <router-link
-        :to="{path:'/map/search', query:{category: locationObj.category}}"
-      >{{ locationObj.category }}</router-link>
+      <router-link :to="{path:'/map/search', query:{category: category}}">{{ category }}</router-link>
     </v-flex>
     <v-flex class="mt-2 title text-xs-left">
       Tags:
@@ -53,30 +51,16 @@
         </v-tab-item>
         <!-- Images Tab -->
         <v-tab-item>
-          <ImagesTabItem/>
+          <ImagesTabItem :imageUrls="imageUrls"/>
         </v-tab-item>
         <!-- Description Tab -->
         <v-tab-item>
-          <DescriptionTabItem/>
+          <DescriptionTabItem :description="description"/>
         </v-tab-item>
       </v-tabs>
     </v-flex>
+    <!-- Subareas Expansion Panels -->
     <v-flex class="my-3" v-if="hasSubareas">
-      <!-- <v-tabs
-        color="primary"
-        slide-color="secondary"
-        dark
-        v-model="subareaTabIndex"
-        centered
-        grow
-        max="400px"
-        show-arrows
-      >
-        <v-tab v-for="(subs, category, i) in subareas" :key="i">{{ category }}</v-tab>
-          <v-tab-item v-for="(subs, category, i) in subareas" :key="i">
-            <SubareaTabItem :subareas="subs" :label="category"/>
-          </v-tab-item>
-      </v-tabs>-->
       <v-expansion-panel v-model="subareaTabIndex" id="subarea-panels">
         <v-expansion-panel-content v-for="(subs, category, i) in subareas" :key="i">
           <template v-slot:header>
@@ -86,6 +70,7 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-flex>
+    <!-- Main Building Tab Panel -->
     <v-flex class="mt-2" v-if="hasMainBuilding">
       <v-tabs color="primary" slide-color="secondary" dark centered>
         <v-tab>
@@ -99,6 +84,7 @@
         </v-tab-item>
       </v-tabs>
     </v-flex>
+    <!-- Nearby Locations Tab Panel -->
     <v-flex class="mt-2">
       <v-tabs color="primary" slide-color="secondary" dark centered>
         <v-tab>
@@ -108,50 +94,44 @@
           </v-layout>
         </v-tab>
         <v-tab-item>
-          <NearbyLocationsTabItem/>
+          <NearbyLocationsTabItem :nearbyLocations="nearbyLocations"/>
         </v-tab-item>
       </v-tabs>
     </v-flex>
-    <v-layout 
-      v-if="isLoggedIn"
-      align-space-around class="mt-4" column
-    >
+    <v-layout v-if="isLoggedIn" align-space-around class="mt-4" column>
       <v-layout justify-space-around>
-      <v-btn 
-        dark color="blue" 
-        :to="{
+        <v-btn
+          dark
+          color="blue"
+          :to="{
           name: 'location_crud_form',
           params: {
             mode: 'update',
-            id:locationId
+            id: locationId
           }
-        }"      
-      >
-        Update Info 
-      </v-btn>
-      <v-btn 
-        dark color="blue" 
-        :to="{
+        }"
+        >Update Info</v-btn>
+        <v-btn
+          dark
+          color="blue"
+          :to="{
           name: 'location_images_form',
           params: {
             id: locationId
           }
-        }"      
-      >
-        Update Images
-      </v-btn>
+        }"
+        >Update Images</v-btn>
       </v-layout>
-      <v-btn color="error"
-         :to="{
+      <v-btn
+        color="error"
+        :to="{
           name: 'location_crud_form',
           params: {
             mode: 'delete',
             id:locationId
           }
-        }"  
-      >
-        Delete
-      </v-btn>
+        }"
+      >Delete</v-btn>
     </v-layout>
   </v-layout>
 </template>
@@ -159,13 +139,19 @@
 <script>
 export default {
   created() {
-    // fetches location data into locationObj
+    // fetches location data
     this.apiGetLocationData();
   },
   data() {
     return {
-      // object contains all details of object
-      locationObj: {},
+      locationName: "",
+      category: "",
+      tags: [],
+      imageUrls: [],
+      description: "",
+      subareas: [],
+      mainBuilding: "",
+      nearbyLocations: [],
       // default thumbnail img-url
       defaultThumbnail: require("@/assets/no-thumbnail.jpg"),
       // index of primary details tabs
@@ -187,22 +173,18 @@ export default {
     },
     // returns the the first img-url in the location as the thumbnail url
     thumbnailUrl() {
-      return this.$store.getters["details/fullImageUrls"][0];
-    },
-    tags() {
-      return this.$store.state.details.tags;
-    },
-    subareas() {
-      return this.$store.state.details.subareas;
+      	return `${this.$backendStaticPath}images/locations/${this.imageUrls[0]}`
     },
     hasSubareas() {
-      return this.$store.getters["details/hasSubareas"];
-    },
-    mainBuilding() {
-      return this.$store.state.details.mainBuilding;
+      for (let category in this.subareas) {
+				if (this.subareas[category]) {
+					return true
+				}
+			}
+			return false
     },
     hasMainBuilding() {
-      return this.$store.getters["details/hasMainBuilding"];
+      return this.mainBuilding != null
     },
     isLoggedIn() {
       return this.$store.getters["auth/isLoggedIn"];
@@ -210,7 +192,7 @@ export default {
   },
   watch: {
     $route() {
-      // refetch location data into locationObj
+      // refetch location data
       this.apiGetLocationData();
       // reset both tab-indexes to first tab
       this.primaryTabIndex = this.subareaTabIndex = 0;
@@ -224,29 +206,21 @@ export default {
           .get(`/locations/${this.locationId}`)
           // stores location data to the details module of Vuex Store if GET successful
           .then(response => {
-            console.log(response);
-            this.locationObj = response.data;
+            console.log("Successfully retrieved location details from API: ", response);
+            this.locationName = response.data.name;
+            this.category = response.data.category;
+            this.tags = response.data.tags;
+            this.imageUrls = response.data.img_urls;
+            this.description = response.data.description;
+            this.subareas = response.data.subareas;
+            this.mainBuilding = response.data.main_building;
+            this.nearbyLocations = response.data.nearby_locations
+
             let { lat, lng } = response.data;
-            this.$store.commit("details/setCategory", response.data.category);
-            this.$store.commit("details/setTags", response.data.tags);
+            this.$store.commit("details/setEndCoords", [lat, lng]);
             this.$store.commit(
               "details/setMarkerIcon",
               response.data.marker_icon
-            );
-            this.$store.commit(
-              "details/setDescription",
-              response.data.description
-            );
-            this.$store.commit("details/setEndCoords", [lat, lng]);
-            this.$store.commit("details/setImageUrls", response.data.img_urls);
-            this.$store.commit("details/setSubareas", response.data.subareas);
-            this.$store.commit(
-              "details/setNearbyLocations",
-              response.data.nearby_locations
-            );
-            this.$store.commit(
-              "details/setMainBuilding",
-              response.data.main_building
             );
           })
           // alerts error and resets Vuex Store coordinates if GET unsuccessful

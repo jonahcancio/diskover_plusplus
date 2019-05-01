@@ -51,10 +51,16 @@ export default {
       for (let jeep of this.jeepList) {
         overlays[jeep.name] = jeep.layer
       }
-      L.control.layers({}, overlays,
+      let control = L.control.layers({}, overlays,
         {
-          position: 'bottomleft'
-        }).addTo(this.map)
+          position: 'bottomleft',
+          collapsed: false
+        }
+      ).addTo(this.map)
+
+      this.map.on("click", () => {
+        control.collapse();
+      })
     },
 
     initJeepRoutes() {
